@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+    volumes:
+      - ./pg.sql:/docker-entrypoint-initdb.d/pg.sql
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: ./server
+      target: debug
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      - PORT=4000
+      - PG_USER=postgres
+      - PG_HOST=postgres
+      - PG_DATABASE=postgres
+      - PG_PASSWORD=postgres_password
+      - PG_PORT=5432
+      - JWT_KEY=cd2342ewdscoidogjdpvjdd9r30tgrjsvj0000
+    ports:
+      - 9229:9229
+      - 4000:4000
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    ports:
+      - 8080:8080
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - 1080:1080
+  pgadmin:
+      image: dpage/pgadmin4
+      container_name: pgadmin4_container
+      restart: always
+      ports:
+        - "5050:80"
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@admin.com
+        PGADMIN_DEFAULT_PASSWORD: admin
