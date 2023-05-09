@@ -11,7 +11,32 @@
           <router-link to="/register" class="nav-link">Sign up</router-link>
         </li>
       </ul>
+
       <ul class="nav nav-pills nav-fill" v-if="user">
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn btn-light dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Change Bank Account
+          </button>
+
+          <ul class="dropdown-menu">
+            <li v-for="s in spaces" :key="s.id">
+              <button
+                :class="[
+                  selectedSpace == s.id
+                    ? 'dropdown-item active'
+                    : 'dropdown-item',
+                ]"
+              >
+                {{ s.name }}
+              </button>
+            </li>
+          </ul>
+        </div>
         <li class="nav-item">
           <a href="javascript:void(0)" @click="onLogout" class="nav-link"
             >Logout</a
@@ -28,10 +53,7 @@ import { mapGetters } from "vuex";
 export default {
   name: "NavbarComp",
   computed: {
-    ...mapGetters(["user"]),
-    displayName() {
-      return this.user.firstName + " " + this.user.lastName;
-    },
+    ...mapGetters(["user", "spaces", "selectedSpace"]),
   },
   methods: {
     async onLogout() {

@@ -1,36 +1,29 @@
 <template>
   <div class="container-fluid">
     <Nav />
-    <div class="container p-3">
-      {{ displayName }}
+    <div class="p-3">
+      <UserHome v-if="user" />
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import Nav from "../components/Navbar.vue";
+import UserHome from "../components/UserHome";
+import Nav from "../components/Navbar";
 
 export default {
   name: "HomePage",
   computed: {
     ...mapGetters(["user"]),
-    displayName() {
-      if (this.user) {
-        return this.user.firstName + " " + this.user.lastName;
-      }
-
-      return null;
-    },
   },
-  components: { Nav },
+  components: { Nav, UserHome },
   async created() {
-    const response = await fetch("/api/auth/currentUser", {
-      method: "GET",
-      headers: {
-        "x-csrf-token": window.localStorage.getItem("csrfToken"),
-      },
-    });
+    const headers = {
+      "x-csrf-token": localStorage.getItem("csrfToken"),
+    };
+
+    const response = await fetch("/api/auth/currentUser", { headers });
 
     if (response.status === 200) {
       const user = await response.json();
