@@ -1,19 +1,37 @@
 <template>
-  <router-view></router-view>
+  <div class="h-100">
+    <router-view></router-view>
+    <Footer />
+  </div>
 </template>
 
 <script>
+import Footer from "./components/Footer";
+
 export default {
   name: "App",
+  components: { Footer },
 };
 </script>
 
 <style>
 @import url("https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800");
 
+html,
 body {
+  margin: 0;
+  padding: 0;
   font-weight: 400 !important;
   font-family: "Fira Sans", sans-serif !important;
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
+
+.bg-app {
+  background-color: #f5f8fa;
 }
 
 .centered-form-wrapper {
@@ -21,7 +39,6 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f5f8fa;
   padding: 0;
 }
 
@@ -39,5 +56,4 @@ body {
     padding: 30px;
   }
 }
-
 </style>

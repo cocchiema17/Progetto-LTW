@@ -40,7 +40,7 @@ router.post("/signin",
 
     const userJwt = jwt.sign(
       {
-        email: user.email,
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName
       },
