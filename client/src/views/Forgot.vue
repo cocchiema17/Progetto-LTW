@@ -1,5 +1,5 @@
 <template>
-  <div class="centered-form-wrapper container-fluid">
+  <div class="centered-form-wrapper container-fluid bg-app">
     <form
       class="centered-form"
       ref="logForm"

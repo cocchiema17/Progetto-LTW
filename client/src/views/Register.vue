@@ -1,5 +1,5 @@
 <template>
-  <div class="centered-form-wrapper container-fluid">
+  <div class="centered-form-wrapper container-fluid bg-app">
     <form class="centered-form" @submit.prevent="onSubmit" novalidate>
       <h1 class="display-6 mb-5 text-center">Register to Finager!</h1>
 

@@ -14,15 +14,13 @@ router.get("/transactions",
   currentUser,
   requireAuth,
   [
-    query("spaceId").notEmpty().withMessage("Space id is required"),
+    query("spaceId").trim().notEmpty().withMessage("Space id is required"),
     query("page").default(0).isInt({ min: 0 }).toInt().withMessage("Invalid page"),
-    query("pageSize").default(10).isInt({ min: 1, max: 500 }).toInt().withMessage("Invalid page size")
+    query("pageSize").default(30).isInt({ min: 1, max: 500 }).toInt().withMessage("Invalid page size")
   ],
   validationHandler,
   async (req, res) => {
     const { spaceId, page, pageSize } = req.query;
-
-    console.log(page*pageSize);
 
     const spaces = await pgClient.getSpacesByUserId(req.currentUser.id);
     if (!spaces.find(s => s.id == spaceId)) {

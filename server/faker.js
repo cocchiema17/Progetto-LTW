@@ -17,7 +17,6 @@ const pool = new Pool({
 
 const categories = ["Food", "Clothes", "Personal", "Travel", "Gym"];
 
-
 for (let i = 0; i < 30; i++) {
   let x = i % 2 == 0;
   pool.query(`INSERT INTO public.transaction(

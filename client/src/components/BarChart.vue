@@ -1,7 +1,6 @@
 <template>
   <Bar :data="data" :options="{ responsive: true }" />
 </template>
-
 <script>
 import { Bar } from "vue-chartjs";
 import {
@@ -12,12 +11,7 @@ import {
   LinearScale,
 } from "chart.js";
 
-ChartJS.register(
-  Tooltip,
-  BarElement,
-  CategoryScale,
-  LinearScale
-);
+ChartJS.register(Tooltip, BarElement, CategoryScale, LinearScale);
 
 export default {
   name: "BarChart",

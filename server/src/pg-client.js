@@ -72,9 +72,10 @@ class PgClient {
 
   async getTransactionsBySpaceId(spaceId, page, pageSize) {
     const result = await pool.query('SELECT COUNT(*) as c FROM public."transaction" WHERE "spaceId" = $1', [spaceId]);
+    const { rows } = await pool.query('SELECT * FROM "transaction" WHERE "spaceId"=$1 LIMIT $2 OFFSET $3', [spaceId, pageSize, pageSize * page]);
+
     const count = parseInt(result.rows[0].c);
 
-    const { rows } = await pool.query('SELECT * FROM "transaction" WHERE "spaceId"=$1 LIMIT $2 OFFSET $3', [spaceId, pageSize, pageSize * page]);
     return { totalElements: count, totalPages: count / pageSize, value: rows };
   }
 
