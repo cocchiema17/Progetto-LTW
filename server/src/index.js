@@ -1,13 +1,15 @@
 "use strict";
 
+require('dotenv').config();
+
 const app = require("./app");
 const keys = require("./keys");
 const PORT = process.env.PORT || 4000;
 
 const start = () => {
   const props = Object.keys(keys);
-  for(let p of props) {
-    if(!keys[p]) {
+  for (let p of props) {
+    if (!keys[p]) {
       throw new Error(`${p} var not set`);
     }
   }

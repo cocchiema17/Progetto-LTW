@@ -1,5 +1,5 @@
 <template>
-  <div class="centered-form-wrapper container-fluid">
+  <div class="centered-form-wrapper container-fluid bg-app">
     <form class="centered-form" @submit.prevent="onSubmit" novalidate>
       <h1 class="display-6 mb-5 text-center">Login to Finager!</h1>
 
@@ -132,9 +132,10 @@ export default {
       if (response.status === 200) {
         this.serverMessage = null;
         const data = await response.json();
-        window.localStorage.setItem("csrfToken", data.csrfToken);
+
+        localStorage.setItem("csrfToken", data.csrfToken);
         this.$store.dispatch("user", data.user);
-        this.$router.push("/");
+        this.$router.push("/home");
       } else {
         if (response.status === 500) {
           this.serverMessage = "Something unexpected occurred... please retry";

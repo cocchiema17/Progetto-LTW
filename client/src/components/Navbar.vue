@@ -1,21 +1,32 @@
 <template>
-  <nav class="navbar bg-body-tertiary">
+  <nav id="navbar" class="navbar body-tertiary border-bottom">
     <div class="container-fluid">
-      <h3 class="navbar-brand">Finager</h3>
-
-      <ul class="nav nav-pills nav-fill" v-if="!user">
-        <li class="nav-item">
-          <router-link to="/login" class="nav-link">Sign in</router-link>
+      <span class="navbar-brand mb-0 h3">Finager</span>
+      <ul class="nav nav-pills nav-fill align-items-center">
+        <li class="nav-item me-3">
+          <div class="dropdown">
+            <button
+              class="btn btn-outline-primary dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Change Space
+            </button>
+            <ul class="dropdown-menu">
+              <li v-for="s in spaces" :key="s.id">
+                <button
+                  class="dropdown-item"
+                  @click="(e) => this.$emit('space-selected', s)"
+                >
+                  {{ s.name }}
+                </button>
+              </li>
+            </ul>
+          </div>
         </li>
         <li class="nav-item">
-          <router-link to="/register" class="nav-link">Sign up</router-link>
-        </li>
-      </ul>
-      <ul class="nav nav-pills nav-fill" v-if="user">
-        <li class="nav-item">
-          <a href="javascript:void(0)" @click="onLogout" class="nav-link"
-            >Logout</a
-          >
+          <a @click="onLogout" href="javascript:void(0)">Logout</a>
         </li>
       </ul>
     </div>
@@ -23,16 +34,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 export default {
   name: "NavbarComp",
-  computed: {
-    ...mapGetters(["user"]),
-    displayName() {
-      return this.user.firstName + " " + this.user.lastName;
-    },
-  },
+  props: ["user", "spaces"],
   methods: {
     async onLogout() {
       const response = await fetch("/api/auth/logout", {
@@ -51,6 +55,3 @@ export default {
   },
 };
 </script>
-
-<style>
-</style>

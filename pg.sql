@@ -11,15 +11,15 @@ create table "user" (
 );
 
 create table "passwordReset" (
-  "userId" uuid not null,
-  "token" varchar(200) not null,
+  "userId" uuid,
+  "token" varchar(200),
   "expiresAt" timestamp not null ,
   "consumed" boolean default false,
   primary key("userId", "token")
 );
 
 create table "space" (
-  "id" uuid not null,
+  "id" bigserial,
   "name" varchar(40) not null unique,
   "userId" uuid not null,
   "createdAt" timestamp not null default CURRENT_TIMESTAMP check ("createdAt" <= CURRENT_TIMESTAMP),
@@ -28,28 +28,28 @@ create table "space" (
 
 create table "category" (
   "name" varchar(40),
-  "spaceId" uuid not null,
+  "spaceId" bigint,
   "color" varchar(40),
-  primary key("space", "name")
+  primary key("name", "spaceId")
 );
 
-create type "transactionType" AS ENUM ('revenue', 'expense');
+create type TransactionType AS ENUM ('revenue', 'expense');
 
 create table "transaction" (
-  "id" uuid not null,
+  "id" uuid default gen_random_uuid(),
   "title" varchar(40) not null,
   "description" varchar(200) not null,
-  "type" transactionType not null,
-  "value" double not null,
+  "type" TransactionType not null,
+  "value" double precision not null,
   "currency" varchar(10) not null,
   "categoryName" varchar(40),
-  "spaceId" uuid not null 
+  "spaceId" bigint not null,
   "transactionDate" date default CURRENT_DATE check ("transactionDate" <= CURRENT_DATE),
   primary key ("id")
 );
 
 create table "attachment" (
-  "id" bigserial not null,
+  "id" bigserial,
   "rawContent" bytea not null,
   "transactionId" uuid not null,
   primary key("id")
