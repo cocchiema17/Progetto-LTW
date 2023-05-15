@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const pgClient = require("../pg-client");
+const pgClient = require("../../pg-client");
 const { body } = require("express-validator");
 const jwt = require("jsonwebtoken");
-const { jwtKey } = require("../keys");
-const validationHandler = require("../middlewares/validate-request-handler");
-const BadRequestError = require("../errors/bad-request-error");
-const Password = require("../services/password-srv");
+const { jwtKey } = require("../../keys");
+const validationHandler = require("../../middlewares/validate-request-handler");
+const BadRequestError = require("../../errors/bad-request-error");
+const Password = require("../../services/password-srv");
 const { randomBytes } = require("crypto");
 
 router.post("/signin",

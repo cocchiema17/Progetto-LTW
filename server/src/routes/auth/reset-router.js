@@ -1,11 +1,11 @@
 const express = require("express");
-const requireAuth = require("../middlewares/require-auth");
-const currentUser = require("../middlewares/current-user");
-const validationHandler = require("../middlewares/validate-request-handler");
+const requireAuth = require("../../middlewares/require-auth");
+const currentUser = require("../../middlewares/current-user");
+const validationHandler = require("../../middlewares/validate-request-handler");
 const { body } = require("express-validator");
-const csrfProtection = require("../middlewares/csrf-protection");
-const pgClient = require("../pg-client");
-const BadRequestError = require("../errors/bad-request-error");
+const csrfProtection = require("../../middlewares/csrf-protection");
+const pgClient = require("../../pg-client");
+const BadRequestError = require("../../errors/bad-request-error");
 const { DateTime } = require("luxon");
 const router = express.Router();
 

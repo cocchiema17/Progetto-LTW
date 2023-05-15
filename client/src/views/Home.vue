@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <Navbar :user="user" :spaces="spaces" @space-selected="onSpaceSelected" />
+    <Navbar :user="user" />
 
     <div class="container-fluid h-100 m-0 p-0">
       <div class="container-fluid charts-container border m-0 p-3">
@@ -18,6 +18,7 @@
               <th scope="col">Title</th>
               <th scope="col">Description</th>
               <th scope="col">Amount</th>
+              <th scope="col">Space</th>
               <th scope="col">Category</th>
               <th scope="col">Date</th>
             </tr>
@@ -36,6 +37,7 @@
                   {{ t.value }}
                 </p>
               </td>
+              <td>{{ t.spaceName }}</td>
               <td>{{ t.categoryName }}</td>
               <td>
                 {{ new Date(t.transactionDate).toLocaleDateString() }}
@@ -51,6 +53,13 @@
 </template>
 
 <script>
+import {
+  getCurrentUser,
+  getSpaces,
+  getCategories,
+  getTransactions,
+} from "../api";
+
 import { mapGetters } from "vuex";
 import Navbar from "../components/Navbar";
 import TableHeader from "../components/TableHeader";
@@ -65,6 +74,7 @@ export default {
   data() {
     return {
       spaces: [],
+      categories: [],
       transactions: [],
       totalTransactions: null,
     };
@@ -76,56 +86,28 @@ export default {
     TableFooter,
   },
   async created() {
-    const result = await fetch("/api/auth/currentUser", {
-      headers: {
-        "x-csrf-token": localStorage.getItem("csrfToken"),
-      },
-    });
-
-    if (result.status === 200) {
-      const user = await result.json();
+    try {
+      const user = await getCurrentUser();
       this.$store.dispatch("user", user);
-
-      this.fetchSpaces();
-    } else {
+    } catch (err) {
       this.$router.push("/login");
     }
-  },
-  methods: {
-    async fetchSpaces() {
-      const result = await fetch("/api/spaces", {
-        headers: {
-          "x-csrf-token": localStorage.getItem("csrfToken"),
-        },
-      });
 
-      if (result.status === 200) {
-        const { value } = await result.json();
-        this.spaces = value;
-      }
-    },
+    try {
+      const results = await Promise.all([
+        getSpaces(),
+        getCategories(),
+        getTransactions(),
+      ]);
 
-    async fetchTransactions(spaceId, page, pageSize) {
-      const result = await fetch("/api/transactions?spaceId=" + spaceId, {
-        headers: {
-          "x-csrf-token": localStorage.getItem("csrfToken"),
-        },
-        params: {
-          page,
-          pageSize,
-        },
-      });
+      this.$store.dispatch("spaces", results[0]);
+      this.$store.dispatch("categories", results[1]);
 
-      if (result.status === 200) {
-        const { totalElements, value } = await result.json();
-        this.totalTransactions = totalElements;
-        this.transactions = value;
-      }
-    },
-
-    onSpaceSelected(space) {
-      this.fetchTransactions(space.id, 1, 10);
-    },
+      this.transactions = results[2].value;
+      this.totalTransactions = results[2].totalElements;
+    } catch (err) {
+      alert(err.message);
+    }
   },
 };
 </script>

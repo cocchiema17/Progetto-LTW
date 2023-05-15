@@ -40,7 +40,7 @@ router.get("/spaces",
   currentUser,
   requireAuth,
   async (req, res) => {
-    const spaces = await pgClient.getSpacesByUserId(req.currentUser.id);
+    const spaces = await pgClient.getUserSpaces(req.currentUser.id);
 
     res.send({ value: spaces });
   }

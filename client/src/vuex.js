@@ -3,7 +3,7 @@ import { Store } from "vuex";
 const state = {
   user: null,
   spaces: [],
-  selectedSpace: null
+  categories: [],
 };
 
 const store = new Store({
@@ -15,8 +15,8 @@ const store = new Store({
     spaces: (state) => {
       return state.spaces;
     },
-    selectedSpace: (state) => {
-      return state.selectedSpace;
+    categories: (state) => {
+      return state.categories;
     }
   },
   actions: {
@@ -26,8 +26,8 @@ const store = new Store({
     spaces(context, spaces) {
       context.commit("spaces", spaces);
     },
-    selectedSpace(context, selectedSpace) {
-      context.commit("selectedSpace", selectedSpace);
+    categories(context, categories) {
+      context.commit("categories", categories);
     }
   },
   mutations: {
@@ -37,8 +37,8 @@ const store = new Store({
     spaces(state, spaces) {
       state.spaces = spaces;
     },
-    selectedSpace(state, selectedSpace) {
-      state.selectedSpace = selectedSpace;
+    categories(state, categories) {
+      state.categories = categories;
     }
   }
 });
