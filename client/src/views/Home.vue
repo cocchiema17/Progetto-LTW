@@ -10,11 +10,12 @@
       <div
         class="table-container container-fluid m-0 p-0 justify-content-center"
       >
-        <TableHeader :totalTransactions="totalTransactions" />
+        <TableHeader :totalTransactions="totalTransactions" @new-tx="onNewTx" />
 
         <table class="table table-hover align-middle table-bordered">
           <thead class="sticky-top">
             <tr class="table-light">
+              <th scope="col">#</th>
               <th scope="col">Title</th>
               <th scope="col">Description</th>
               <th scope="col">Amount</th>
@@ -24,18 +25,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="t in transactions" :key="t.id">
+            <tr v-for="(t, idx) in transactions" :key="t.id">
+              <th scope="row">{{ idx + 1 }}</th>
               <td>{{ t.title }}</td>
               <td>{{ t.description }}</td>
-              <td>
-                <p
-                  :class="[
-                    t.type == 'expense' ? 'text-danger' : 'text-success',
-                  ]"
-                >
-                  {{ t.type == "expense" ? "-" : "+" }}{{ t.currency }}
-                  {{ t.value }}
-                </p>
+              <td :class="t.type == 'expense' ? 'text-danger' : 'text-success'">
+                {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
               </td>
               <td>{{ t.spaceName }}</td>
               <td>{{ t.categoryName }}</td>
@@ -46,7 +41,12 @@
           </tbody>
         </table>
 
-        <TableFooter />
+        <TableFooter
+          :totalPages="totalPages"
+          :pageSize="pageSize"
+          :selectedPage="selectedPage"
+          @page-clicked="onPageClicked"
+        />
       </div>
     </div>
   </div>
@@ -69,14 +69,15 @@ import PieChart from "../components/PieChart";
 export default {
   name: "HomePage",
   computed: {
-    ...mapGetters(["user"]),
+    ...mapGetters(["user", "spaces", "categories"]),
   },
   data() {
     return {
-      spaces: [],
-      categories: [],
       transactions: [],
-      totalTransactions: null,
+      totalTransactions: 0,
+      selectedPage: 0,
+      totalPages: 0,
+      pageSize: 10,
     };
   },
   components: {
@@ -97,7 +98,7 @@ export default {
       const results = await Promise.all([
         getSpaces(),
         getCategories(),
-        getTransactions(),
+        getTransactions(this.pageSize, 0),
       ]);
 
       this.$store.dispatch("spaces", results[0]);
@@ -105,9 +106,43 @@ export default {
 
       this.transactions = results[2].value;
       this.totalTransactions = results[2].totalElements;
+      this.totalPages = results[2].totalPages;
     } catch (err) {
       alert(err.message);
     }
+  },
+  methods: {
+    async onNewTx(tx) {
+      await this.fetchTransactions(this.selectedPage);
+
+      const c = this.categories.find(
+        (c) => c.spaceId == tx.spaceId && c.categoryName == tx.categoryName
+      );
+
+      if (!c) {
+        const space = this.spaces.find((s) => s.id == tx.spaceId);
+
+        this.categories.push({
+          name: tx.categoryName,
+          spaceId: tx.spaceId,
+          spaceName: space.name,
+        });
+      }
+    },
+    async onPageClicked(page) {
+      this.selectedPage = page;
+      await this.fetchTransactions(page);
+    },
+    async fetchTransactions(page) {
+      const { totalElements, totalPages, value } = await getTransactions(
+        this.pageSize,
+        page
+      );
+
+      this.transactions = value;
+      this.totalTransactions = totalElements;
+      this.totalPages = totalPages;
+    },
   },
 };
 </script>

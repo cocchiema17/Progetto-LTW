@@ -20,7 +20,7 @@
       Add
     </button>
 
-    <NewTransactionModal name="newTransactionModal" />
+    <NewTransactionModal name="newTransactionModal" @new-tx="e => $emit('new-tx', e)" />
   </div>
 </template>
 

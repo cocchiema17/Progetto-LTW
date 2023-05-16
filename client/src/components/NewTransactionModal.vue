@@ -1,6 +1,6 @@
 <template>
   <div class="modal fade" :id="name" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5 text-center">Add Transaction</h1>
@@ -37,6 +37,7 @@
                 type="text"
                 id="description"
                 v-model="description"
+                required
                 maxlength="200"
               />
             </div>
@@ -48,7 +49,6 @@
                 type="date"
                 id="date"
                 v-model="date"
-                :max="new Date()"
                 required
               />
             </div>
@@ -70,7 +70,7 @@
                 />
                 <datalist id="categoriesSuggest">
                   <option
-                    v-for="c in categories"
+                    v-for="c in selectedCategories"
                     :key="c.id"
                     :style="{ color: c.color }"
                   >
@@ -95,7 +95,7 @@
 
             <div class="mb-3">
               <label for="amount" class="form-label">Amount</label>
-              <MoneyInput v-model="value" />
+              <MoneyInput v-model="value" required />
             </div>
           </form>
         </div>
@@ -104,6 +104,7 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            ref="closeBtn"
           >
             Close
           </button>
@@ -119,16 +120,27 @@
 
 <script>
 import { mapGetters } from "vuex";
-import MoneyInput from "./MoneyInput";
 import { createTransaction } from "../api";
+import MoneyInput from "./MoneyInput";
+import { useToast, TYPE } from "vue-toastification";
 
 export default {
   name: "NewTransactionModalComp",
-  components: { MoneyInput },
   computed: {
     ...mapGetters(["spaces", "categories"]),
+    selectedCategories() {
+      if (!this.spaces || this.spaces.length === 0) return [];
+
+      const spaceId = this.spaces[this.spaceIdx].id;
+      return this.categories.filter((c) => c.spaceId === spaceId);
+    },
   },
+  components: { MoneyInput },
   props: ["name"],
+  setup() {
+    const toast = useToast();
+    return { toast };
+  },
   data() {
     return {
       title: "",
@@ -137,37 +149,56 @@ export default {
       file: null,
       categoryName: "",
       spaceIdx: 0,
-      value: 0,
+      value: null,
       formValidated: false,
     };
   },
   methods: {
     async onSave() {
       const form = this.$refs.txForm;
+      const closeBtn = this.$refs.closeBtn;
 
       if (form.checkValidity()) {
-        const tx = await createTransaction({
-          title: this.title,
-          description: this.description,
-          date: this.date,
-          categoryName: this.categoryName,
-          spaceId: this.spaces[this.spaceIdx].id,
-          value: this.value,
-        });
-        console.log("New tx!", tx);
-        this.resetData();
+        try {
+          const tx = await createTransaction({
+            title: this.title,
+            description: this.description,
+            date: this.date,
+            categoryName: this.categoryName,
+            spaceId: this.spaces[this.spaceIdx].id,
+            value: this.value,
+          });
+
+          (tx.spaceName = this.spaces[this.spaceIdx].name),
+            (this.formValidated = false);
+
+          this.$emit("new-tx", tx);
+          closeBtn.click();
+          this.newToast("Transaction added", TYPE.SUCCESS);
+        } catch (err) {
+          console.log(err);
+          this.newToast("Transaction creation failed", TYPE.ERROR);
+        }
+      } else {
+        this.formValidated = true;
       }
-
-      this.formValidated = true;
     },
-
-    resetData() {
-      this.title = "";
-      this.description = "";
-      this.date = "";
-      this.categoryName = "";
-      this.spaceId = "";
-      this.value = "";
+    newToast(msg, type) {
+      this.toast(msg, {
+        position: "bottom-right",
+        timeout: 3000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 1.0,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false,
+        type,
+      });
     },
   },
 };
