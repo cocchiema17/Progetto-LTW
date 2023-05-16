@@ -70,23 +70,44 @@ class PgClient {
     }
   }
 
-  async getTransactionsBySpaceId(spaceId, page, pageSize) {
-    const result = await pool.query('SELECT COUNT(*) as c FROM public."transaction" WHERE "spaceId" = $1', [spaceId]);
-    const { rows } = await pool.query('SELECT * FROM "transaction" WHERE "spaceId"=$1 LIMIT $2 OFFSET $3', [spaceId, pageSize, pageSize * page]);
-
+  async getUserTransactions(userId, page, pageSize) {
+    const result = await pool.query(
+      'SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1', [userId]
+    );
     const count = parseInt(result.rows[0].c);
+
+    const { rows } = await pool.query(
+      'SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 LIMIT $2 OFFSET $3', [userId, pageSize, pageSize * page]
+    );
 
     return { totalElements: count, totalPages: count / pageSize, value: rows };
   }
 
-  async getSpacesByUserId(userId) {
+  async getUserSpaces(userId) {
     const { rows } = await pool.query('SELECT * FROM space WHERE "userId"=$1', [userId]);
+    return rows;
+  }
+
+  async getUserCategories(userId) {
+    const { rows } = await pool.query(
+      'SELECT c.*, s.name as "spaceName" FROM category c JOIN space s ON c."spaceId" = s.id WHERE s."userId" = $1', [userId]
+    );
     return rows;
   }
 
   async createSpace(userId, name) {
     const { rows } = await pool.query('INSERT INTO space ("name", "userId") VALUES ($1, $2) RETURNING *', [name, userId]);
     return rows[0];
+  }
+
+  async createTransaction(payload) {
+    console.log(payload);
+    const result = await pool.query(`
+      INSERT INTO transaction (title, description, type, value, "categoryName", "spaceId", "transactionDate")
+      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [payload.title, payload.description, payload.value > 0 ? 'revenue' : 'expense', payload.value, payload.categoryName, payload.spaceId, payload.date]
+    );
+    return result[0];
   }
 };
 

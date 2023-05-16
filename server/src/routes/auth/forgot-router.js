@@ -1,11 +1,11 @@
 const express = require("express");
-const requireAuth = require("../middlewares/require-auth");
-const currentUser = require("../middlewares/current-user");
-const csrfProtection = require("../middlewares/csrf-protection");
-const validationHandler = require("../middlewares/validate-request-handler");
+const requireAuth = require("../../middlewares/require-auth");
+const currentUser = require("../../middlewares/current-user");
+const csrfProtection = require("../../middlewares/csrf-protection");
+const validationHandler = require("../../middlewares/validate-request-handler");
 const { body } = require("express-validator");
-const pgClient = require("../pg-client");
-const transporter = require("../mail");
+const pgClient = require("../../pg-client");
+const transporter = require("../../mail");
 const { randomBytes } = require("crypto");
 const router = express.Router();
 const { DateTime } = require("luxon");

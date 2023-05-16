@@ -41,7 +41,6 @@ create table "transaction" (
   "description" varchar(200) not null,
   "type" TransactionType not null,
   "value" double precision not null,
-  "currency" varchar(10) not null,
   "categoryName" varchar(40),
   "spaceId" bigint not null,
   "transactionDate" date default CURRENT_DATE check ("transactionDate" <= CURRENT_DATE),

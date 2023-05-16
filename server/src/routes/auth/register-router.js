@@ -1,12 +1,12 @@
 const express = require("express");
 const { body } = require('express-validator');
 const router = express.Router();
-const BadRequestError = require("../errors/bad-request-error");
-const DatabaseError = require("../errors/database-error");
+const BadRequestError = require("../../errors/bad-request-error");
+const DatabaseError = require("../../errors/database-error");
 
-const pgClient = require("../pg-client");
-const validationHandler = require("../middlewares/validate-request-handler");
-const Password = require("../services/password-srv");
+const pgClient = require("../../pg-client");
+const validationHandler = require("../../middlewares/validate-request-handler");
+const Password = require("../../services/password-srv");
 
 router.post("/signup",
   [
