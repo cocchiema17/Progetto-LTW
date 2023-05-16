@@ -24,5 +24,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+nav {
+  padding-bottom: 50px;
+}
 </style>

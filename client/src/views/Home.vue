@@ -146,5 +146,6 @@ export default {
 
 .table-container {
   height: 60%;
+  overflow-y: scroll;
 }
 </style>

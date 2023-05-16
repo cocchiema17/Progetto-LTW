@@ -28,7 +28,7 @@ for (let i = 0; i < 30; i++) {
     faker.commerce.price(),
     faker.finance.currencyCode(),
     faker.helpers.arrayElement(categories),
-    2,
+    1,
     faker.date.past(1)
   ]);
 }
