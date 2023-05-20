@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const app = require("./app");
 const keys = require("./keys");
-const PORT = process.env.PORT || 4000;
+const PORT = 4000;
 
 const start = () => {
   const props = Object.keys(keys);

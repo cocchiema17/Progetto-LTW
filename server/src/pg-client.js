@@ -77,10 +77,11 @@ class PgClient {
     const count = parseInt(result.rows[0].c);
 
     const { rows } = await pool.query(
-      'SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 LIMIT $2 OFFSET $3', [userId, pageSize, pageSize * page]
+      'SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ORDER BY "transactionDate" DESC LIMIT $2 OFFSET $3',
+      [userId, pageSize, pageSize * page]
     );
 
-    return { totalElements: count, totalPages: count / pageSize, value: rows };
+    return { totalElements: count, totalPages: Math.ceil(count / pageSize), value: rows };
   }
 
   async getUserSpaces(userId) {
@@ -101,13 +102,29 @@ class PgClient {
   }
 
   async createTransaction(payload) {
-    console.log(payload);
-    const result = await pool.query(`
-      INSERT INTO transaction (title, description, type, value, "categoryName", "spaceId", "transactionDate")
-      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [payload.title, payload.description, payload.value > 0 ? 'revenue' : 'expense', payload.value, payload.categoryName, payload.spaceId, payload.date]
-    );
-    return result[0];
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      await client.query(
+        `INSERT INTO category (name, "spaceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [payload.categoryName, payload.spaceId]
+      );
+
+      const { rows } = await client.query(`
+        INSERT INTO transaction (title, description, type, value, "categoryName", "spaceId", "transactionDate")
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        [payload.title, payload.description, payload.value > 0 ? 'revenue' : 'expense', Math.abs(payload.value), payload.categoryName, payload.spaceId, payload.date]
+      );
+
+      await client.query('COMMIT');
+
+      return rows[0];
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
   }
 };
 

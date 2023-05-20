@@ -32,7 +32,7 @@ router.post("/transactions",
   [
     body("title").trim().notEmpty(),
     body("description").trim().notEmpty(),
-    body("date").trim().notEmpty().isDate({ format: 'YYYY-MM-DD' }).toDate(),
+    body("date").trim().notEmpty().isDate({ format: 'YYYY-MM-DD' }),
     body("categoryName").trim().notEmpty(),
     body("spaceId").trim().notEmpty(),
     body("value").trim().notEmpty().isFloat().not().equals(0),
