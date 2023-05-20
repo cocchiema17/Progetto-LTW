@@ -1,16 +1,16 @@
 <template>
-  <nav aria-label="Page navigation example">
+  <nav aria-label="Page navigation example" id="pagination">
     <ul class="pagination">
       <li class="page-item">
-        <a class="page-link" href="#" aria-label="Previous">
+        <a :class="{ 'page-link': true, 'disabled': selectedPage == 0 }" href="#pagination" aria-label="Previous" @click="$emit('page-clicked', selectedPage-1)">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
-      <li class="page-item"><a class="page-link" href="#">1</a></li>
-      <li class="page-item"><a class="page-link" href="#">2</a></li>
-      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li v-for="i in Math.ceil(totalPages)" :class="{'page-item': true, 'active': selectedPage == i-1 }" :key="i">
+        <a @click="$emit('page-clicked', i-1)" class="page-link" href="#pagination">{{ i }}</a>
+      </li>
       <li class="page-item">
-        <a class="page-link" href="#" aria-label="Next">
+        <a :class="{ 'page-link': true, 'disabled': selectedPage+1 == totalPages }" href="#pagination" aria-label="Next" @click="$emit('page-clicked', selectedPage+1)">
           <span aria-hidden="true">&raquo;</span>
         </a>
       </li>
@@ -21,6 +21,7 @@
 <script>
 export default {
   name: "TableFooterComp",
+  props: ["totalPages", "pageSize", "selectedPage"],
 };
 </script>
 

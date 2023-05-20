@@ -7,7 +7,22 @@
     </div>
 
     <div class="btn-group p-1" role="group" aria-label="Basic example">
-      <button type="button" class="btn btn-outline-primary">Filter</button>
+      <button
+        type="button"
+        class="btn btn-outline-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#newSpaceModal"
+      >
+        Add space
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#filterModal"
+      >
+        Filter
+      </button>
       <button type="button" class="btn btn-outline-primary">Sort</button>
       <button type="button" class="btn btn-outline-primary">Download</button>
     </div>
@@ -20,16 +35,23 @@
       Add
     </button>
 
-    <NewTransactionModal name="newTransactionModal" />
+    <NewTransactionModal
+      name="newTransactionModal"
+      @new-tx="(e) => $emit('new-tx', e)"
+    />
+    <NewSpaceModal name="newSpaceModal" />
   </div>
 </template>
 
 <script>
 import NewTransactionModal from "./NewTransactionModal";
+// import FilterModal from "./FilterModal";
+import NewSpaceModal from "./NewSpaceModal";
 
 export default {
   name: "TableHeaderComp",
   props: ["totalTransactions"],
-  components: { NewTransactionModal },
+  components: { NewTransactionModal, NewSpaceModal },
+  //components: { NewTransactionModal },
 };
 </script>

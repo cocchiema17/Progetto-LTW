@@ -132,7 +132,7 @@
       </div>
     </div>
 
-    <footer id="contatti">
+    <!-- <footer id="contatti">
       <h3>Contatti</h3>
       <h5>
         Indirizzo email: <a href="mailto:info@finager.com">info@finager.com</a>
@@ -150,7 +150,7 @@
         target="_blank"
         class="fa fa-facebook"
       ></a>
-    </footer>
+    </footer> -->
   </main>
 </template>
 
@@ -177,7 +177,7 @@ export default {
 
     window.addEventListener("scroll", function () {
       for (let i = 0; i < contents.length; i++) {
-        console.log(eles[i]);
+        // console.log(eles[i]);
         const rect = eles[i].getBoundingClientRect();
         const elePosition = rect.top + window.scrollY - window.innerHeight / 2;
 
