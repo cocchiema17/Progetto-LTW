@@ -12,11 +12,11 @@
           ></button>
         </div>
         <div class="modal-body">
-          <!-- <form @submit.prevent="prova" ref="spForm"> -->
           <form ref="spForm" novalidate>
             <div class="mb-3">
               <label for="name" class="form-label">Name Space</label>
               <input
+                class="form-control"
                 type="text"
                 minlength="3"
                 maxlength="40"
@@ -24,6 +24,11 @@
                 v-model="name"
                 required
               />
+              <p class="errMessage">
+                <span v-if="isError">
+                  {{ errMessage }}
+                </span>
+              </p>
             </div>
           </form>
         </div>
@@ -32,6 +37,7 @@
             @click.prevent="resetData"
             type="button"
             class="btn btn-secondary"
+            ref="closeBtn"
             data-bs-dismiss="modal"
           >
             Close
@@ -48,46 +54,76 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { createSpace } from "../api";
+import { createSpace, getSpaces } from "../api";
+import { useToast, TYPE } from "vue-toastification";
 
 export default (await import("vue")).defineComponent({
-  name: "NewSpaceModal",
+  name: "NewSpaceModalComp",
   computed: {
     ...mapGetters(["user", "spaces", "categories"]),
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
       name: "",
+      isError: false,
+      errMessage: "",
     };
   },
   methods: {
     async onSave() {
-      let errNameSpace = false;
-      let nameSpace;
-      this.spaces.forEach((space) => {
-        nameSpace = space.name;
-        if (nameSpace == this.name) {
-          errNameSpace = true;
-          alert(`Space with name ${this.name} already in use`);
-        }
-      });
       const form = this.$refs.spForm;
-      console.log(this.user.id);
-      console.log(this.name);
-      console.log(errNameSpace);
-      if (form.checkValidity() && !errNameSpace) {
-        console.log(this.name);
-        const space = await createSpace(this.name);
-        console.log(space);
+      const closeBtn = this.$refs.closeBtn;
+      if (form.checkValidity()) {
+        let isReqErr = false;
+        try {
+          await createSpace(this.name);
+        } catch (err) {
+          this.errMessage = err.response.data.error.errors[0].message;
+          this.isError = true;
+          isReqErr = true;
+          this.newToast("Space creation failed", TYPE.ERROR);
+        } finally {
+          if (!isReqErr) {
+            closeBtn.click();
+            this.newToast("Space added", TYPE.SUCCESS);
+            this.resetData();
+            this.$store.dispatch("spaces", await getSpaces());
+          }
+        }
       }
-
-      this.resetData();
     },
     async resetData() {
       this.name = "";
+      this.isError = false;
+    },
+    newToast(msg, type) {
+      this.toast(msg, {
+        position: "bottom-right",
+        timeout: 3000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 1.0,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false,
+        type,
+      });
     },
   },
 });
 </script>
 
-<style></style>
+<style scoped>
+.errMessage {
+  color: red;
+  font-size: small;
+}
+</style>

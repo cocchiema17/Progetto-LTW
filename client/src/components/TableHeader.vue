@@ -40,18 +40,18 @@
       @new-tx="(e) => $emit('new-tx', e)"
     />
     <NewSpaceModal name="newSpaceModal" />
+    <FilterModal name="filterModal" />
   </div>
 </template>
 
 <script>
 import NewTransactionModal from "./NewTransactionModal";
-// import FilterModal from "./FilterModal";
+import FilterModal from "./FilterModal";
 import NewSpaceModal from "./NewSpaceModal";
 
 export default {
   name: "TableHeaderComp",
   props: ["totalTransactions"],
-  components: { NewTransactionModal, NewSpaceModal },
-  //components: { NewTransactionModal },
+  components: { NewTransactionModal, NewSpaceModal, FilterModal },
 };
 </script>

@@ -32,6 +32,7 @@ const getCategories = async () => {
   return data.value;
 };
 
+//da modificare
 const getTransactions = async (pageSize, page) => {
   const { data } = await axios.get("/api/transactions", {
     params: { pageSize, page },
