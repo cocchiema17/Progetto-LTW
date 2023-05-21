@@ -70,14 +70,58 @@ class PgClient {
     }
   }
 
-  async getUserTransactions(userId, page, pageSize) {
+  async getUserTransactions(userId, filters) {
+    const { page, pageSize, categoryName, space, amount, search } = filters;
+    const filters = [];
+
+    if (categoryName) {
+      filters.push(`"categoryName" = '${categoryName}'`);
+    }
+
+    if (space) {
+      filters.push(`space = '${space}'`);
+    }
+
+    if (search) {
+      filters.push(`(title ILIKE '%${search}%' OR description ILIKE '%${search}%')`);
+    }
+
+    if (amount) {
+      const value = amount.split(";");
+
+      switch (value[0]) {
+        case 'EQ':
+          filters.push(`amount = ${value[1]}`);
+          break;
+        case 'NE':
+          filters.push(`amount != ${value[1]}`);
+          break;
+        case 'GT':
+          filters.push(`amount > ${value[1]}`);
+          break;
+        case 'GE':
+          filters.push(`amount >= ${value[1]}`);
+          break;
+        case 'LT':
+          filters.push(`amount < ${value[1]}`);
+          break;
+        case 'LE':
+          filters.push(`amount <= ${value[1]}`);
+          break;
+        case 'BT':
+          filters.push(`(amount >= ${value[1]} AND amount <= ${value[2]})`);
+          break;
+      }
+    }
+
+
     const result = await pool.query(
-      'SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1', [userId]
+      'SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ' + filters.join("AND"), [userId]
     );
     const count = parseInt(result.rows[0].c);
 
     const { rows } = await pool.query(
-      'SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ORDER BY "transactionDate" DESC LIMIT $2 OFFSET $3',
+      `SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ${filters.join("AND")} ORDER BY "transactionDate" DESC LIMIT $2 OFFSET $3`,
       [userId, pageSize, pageSize * page]
     );
 
