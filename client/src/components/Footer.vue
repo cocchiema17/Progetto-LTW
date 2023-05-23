@@ -21,7 +21,7 @@
     <div class="flex-grow-1">
       <ul class="nav justify-content-end align-items-center">
         <li class="me-2">
-          <a href="https://twitter.com/FinagerInfo">
+          <a href="https://twitter.com/FinagerInfo" target="_blank">
             <img
               src="https://cdn.cdnlogo.com/logos/t/39/twitter.svg"
               width="40"
@@ -29,7 +29,7 @@
           </a>
         </li>
         <li>
-          <a href="https://instagram.com">
+          <a href="https://instagram.com" target="_blank">
             <img
               src="https://cdn.cdnlogo.com/logos/i/28/instagram.png"
               width="40"

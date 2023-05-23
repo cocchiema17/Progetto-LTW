@@ -6,7 +6,7 @@
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
-      <li v-for="i in Math.ceil(totalPages)" :class="{'page-item': true, 'active': selectedPage == i-1 }" :key="i">
+      <li v-for="i in totalPages" :class="{'page-item': true, 'active': selectedPage == i-1 }" :key="i">
         <a @click="$emit('page-clicked', i-1)" class="page-link" href="#pagination">{{ i }}</a>
       </li>
       <li class="page-item">
@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style scoped>
-nav {
+/* nav {
   padding-bottom: 50px;
-}
+} */
 </style>

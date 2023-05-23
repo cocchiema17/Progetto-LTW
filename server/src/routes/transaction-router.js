@@ -13,13 +13,20 @@ router.get("/transactions",
   requireAuth,
   [
     query("page").default(0).isInt({ min: 0 }).toInt().withMessage("Invalid page"),
-    query("pageSize").default(30).isInt({ min: 1, max: 500 }).toInt().withMessage("Invalid page size")
+    query("pageSize").default(30).isInt({ min: 1, max: 500 }).toInt().withMessage("Invalid page size"),
+    query("space").optional(),
+    query("categoryName").optional(),
+    //query("amount").optional(), // validatione : formato <OPERATORE>;<VALORE>
+    query("search").optional(),
   ],
   validationHandler,
   async (req, res) => {
-    const { page, pageSize } = req.query;
+    const { page, pageSize, space, categoryName, search } = req.query;  //amount,
 
-    const { totalElements, totalPages, value } = await pgClient.getUserTransactions(req.currentUser.id, page, pageSize);
+    const { totalElements, totalPages, value } = await pgClient.getUserTransactions(
+      req.currentUser.id,
+      { page, pageSize, space, categoryName, search } //amount,
+    );
 
     res.send({ totalElements, totalPages, value });
   }

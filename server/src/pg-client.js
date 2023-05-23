@@ -78,17 +78,77 @@ class PgClient {
     }
   }
 
-  async getUserTransactions(userId, page, pageSize) {
+  async getUserTransactions(userId, filters_param) {
+    const { page, pageSize, categoryName, space, search } = filters_param; //amount,
+    const filters = [];
+
+    if (categoryName) {
+      filters.push(`t."categoryName" = '${categoryName}'`);
+    }
+
+    if (space) {
+      filters.push(`s."name" = '${space}'`);
+    }
+
+    if (search) {
+      filters.push(
+        `(title ILIKE '%${search}%' OR description ILIKE '%${search}%')`
+      );
+    }
+
+    // if (amount) {
+    //   const value = amount.split(";");
+
+    //   switch (value[0]) {
+    //     case 'EQ':
+    //       filters.push(`value = ${value[1]}`);
+    //       break;
+    //     case 'NE':
+    //       filters.push(`value != ${value[1]}`);
+    //       break;
+    //     case 'GT':
+    //       filters.push(`value > ${value[1]}`);
+    //       break;
+    //     case 'GE':
+    //       filters.push(`value >= ${value[1]}`);
+    //       break;
+    //     case 'LT':
+    //       filters.push(`value < ${value[1]}`);
+    //       break;
+    //     case 'LE':
+    //       filters.push(`value <= ${value[1]}`);
+    //       break;
+    //     case 'BT':
+    //       filters.push(`(value >= ${value[1]} AND value <= ${value[2]})`);
+    //       break;
+    //   }
+    // }
+
+    // console.log("FILTERS", filters.length > 0 ? true : false);
+
     const result = await pool.query(
-      'SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1',
+      `SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
+        ${filters.length >
+        0
+        ? " AND "
+        : ""}  ${filters.join(" AND ")}`,
       [userId]
     );
     const count = parseInt(result.rows[0].c);
+    // console.log("COUNT: ", count);
 
     const { rows } = await pool.query(
-      'SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ORDER BY "transactionDate" DESC LIMIT $2 OFFSET $3',
+      `SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ${
+        filters.length > 0 ? " AND " : ""
+      } ${filters.join(
+        " AND "
+      )} ORDER BY "transactionDate" DESC LIMIT $2 OFFSET $3`,
       [userId, pageSize, pageSize * page]
     );
+
+    // console.log("PAGE: ", page);
+    // console.log("PAGE SIZE: ", pageSize);
+    // console.log("TOTAL PAGES: ", Math.ceil(count / pageSize));
 
     return {
       totalElements: count,
@@ -154,39 +214,6 @@ class PgClient {
     } finally {
       client.release();
     }
-  }
-
-  async getFilteredUserTransactions(
-    userId,
-    // page,
-    // pageSize,
-    search,
-    space,
-    category
-  ) {
-    const result = await pool.query(
-      `SELECT t.title, t.description, t."value", t."categoryName", t."transactionDate", s.name
-      FROM public.transaction t join public.space s on t."spaceId" = s.id join public."user" u ON u.id = s."userId"
-      WHERE u.id = ${userId}
-      ${category ? 'AND t."categoryName" = ' + category : ""}
-      ${space ? "AND s.name = " + space : ""} AND 
-      (t.title ILIKE '%${search}%' or t.description ILIKE '%${search}%')`
-    );
-
-    console.log(result);
-
-    // const count = parseInt(result.rows[0].c);
-
-    // const { rows } = await pool.query(
-    //   'SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ORDER BY "transactionDate" DESC LIMIT $2 OFFSET $3',
-    //   [userId, pageSize, pageSize * page]
-    // );
-
-    // return {
-    //   totalElements: count,
-    //   totalPages: Math.ceil(count / pageSize),
-    //   value: rows,
-    // };
   }
 }
 

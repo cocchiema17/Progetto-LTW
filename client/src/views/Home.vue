@@ -10,7 +10,13 @@
       <div
         class="table-container container-fluid m-0 p-0 justify-content-center"
       >
-        <TableHeader :totalTransactions="totalTransactions" @new-tx="onNewTx" />
+        <TableHeader
+          :totalTransactions="totalTransactions"
+          :pageSize="pageSize"
+          :transactions="transactions"
+          :totalPages="totalPages"
+          @new-tx="onNewTx"
+        />
         <div class="table-scroll">
           <table class="table table-hover align-middle table-bordered">
             <thead class="sticky-top">
@@ -165,7 +171,7 @@ export default {
 }
 
 .table-container {
-  height: 100%;
+  height: 60%;
 }
 
 .table-scroll {
