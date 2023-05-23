@@ -21,7 +21,6 @@ router.post("/spaces",
   validationHandler,
   async (req, res) => {
     const { name } = req.body;
-
     try {
       const space = await pgClient.createSpace(req.currentUser.id, name);
       res.send(space);

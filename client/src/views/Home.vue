@@ -10,36 +10,45 @@
       <div
         class="table-container container-fluid m-0 p-0 justify-content-center"
       >
-        <TableHeader :totalTransactions="totalTransactions" @new-tx="onNewTx" />
-
-        <table class="table table-hover align-middle table-bordered">
-          <thead class="sticky-top">
-            <tr class="table-light">
-              <th scope="col">#</th>
-              <th scope="col">Title</th>
-              <th scope="col">Description</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Space</th>
-              <th scope="col">Category</th>
-              <th scope="col">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(t, idx) in transactions" :key="t.id">
-              <th scope="row">{{ idx + 1 }}</th>
-              <td>{{ t.title }}</td>
-              <td>{{ t.description }}</td>
-              <td :class="t.type == 'expense' ? 'text-danger' : 'text-success'">
-                {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
-              </td>
-              <td>{{ t.spaceName }}</td>
-              <td>{{ t.categoryName }}</td>
-              <td>
-                {{ new Date(t.transactionDate).toLocaleDateString() }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <TableHeader
+          :totalTransactions="totalTransactions"
+          :pageSize="pageSize"
+          :transactions="transactions"
+          :totalPages="totalPages"
+          @new-tx="onNewTx"
+        />
+        <div class="table-scroll">
+          <table class="table table-hover align-middle table-bordered">
+            <thead class="sticky-top">
+              <tr class="table-light no-border-top">
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Space</th>
+                <th scope="col">Category</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(t, idx) in transactions" :key="t.id">
+                <th scope="row">{{ idx + 1 }}</th>
+                <td>{{ t.title }}</td>
+                <td>{{ t.description }}</td>
+                <td
+                  :class="t.type == 'expense' ? 'text-danger' : 'text-success'"
+                >
+                  {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
+                </td>
+                <td>{{ t.spaceName }}</td>
+                <td>{{ t.categoryName }}</td>
+                <td>
+                  {{ new Date(t.transactionDate).toLocaleDateString() }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <TableFooter
           :totalPages="totalPages"
@@ -163,5 +172,19 @@ export default {
 
 .table-container {
   height: 60%;
+}
+
+.table-scroll {
+  height: 65%;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+}
+
+.no-border-top {
+  border-top: 0 !important;
+}
+
+.dropdown {
+  text-align: center;
 }
 </style>
