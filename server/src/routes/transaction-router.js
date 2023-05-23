@@ -16,16 +16,18 @@ router.get("/transactions",
     query("pageSize").default(30).isInt({ min: 1, max: 500 }).toInt().withMessage("Invalid page size"),
     query("space").optional(),
     query("categoryName").optional(),
-    //query("amount").optional(), // validatione : formato <OPERATORE>;<VALORE>
+    query("amount").optional(),
+    query("operator").optional(),
+    query("amount2").optional(),
     query("search").optional(),
   ],
   validationHandler,
   async (req, res) => {
-    const { page, pageSize, space, categoryName, search } = req.query;  //amount,
+    const { page, pageSize, space, categoryName, search, amount, operator, amount2 } = req.query;  //amount,
 
     const { totalElements, totalPages, value } = await pgClient.getUserTransactions(
       req.currentUser.id,
-      { page, pageSize, space, categoryName, search } //amount,
+      { page, pageSize, space, categoryName, search, amount, operator, amount2 } 
     );
 
     res.send({ totalElements, totalPages, value });

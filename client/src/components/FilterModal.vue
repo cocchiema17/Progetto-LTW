@@ -48,7 +48,7 @@
               </select>
             </div>
             <div class="input-group mb-3">
-              <div class="col-6 pe-3 m-0">
+              <div class="col-6 pe-3 m-0" id="amount-conteiner">
                 <label class="form-check-label" for="amount"> Amount: </label>
                 <input
                   class="form-control"
@@ -57,7 +57,7 @@
                   id="amount"
                 />
               </div>
-              <div class="col-6 p-0 m-0">
+              <div class="col-6 p-0 m-0" id="operator-conteiner">
                 <label class="form-check-label" for="operator">
                   Operator:
                 </label>
@@ -65,7 +65,7 @@
                   class="form-control"
                   v-model="operator"
                   id="operator"
-                  on-change="onChangeOperator();"
+                  @change="onChangeOperator"
                 >
                   <option value="">None</option>
                   <option value="EQ">=</option>
@@ -74,13 +74,25 @@
                   <option value="GE">&gt;=</option>
                   <option value="LT">&lt;</option>
                   <option value="LE">&lt;=</option>
-                  <option value="BT">&gt; &lt;</option>
+                  <option value="BT">≥ ≤</option>
                 </select>
+              </div>
+              <div class="col-4 ps-3 m-0 d-none" id="amount2-conteiner">
+                <label class="form-check-label" for="amount2"> Amount: </label>
+                <input
+                  class="form-control"
+                  type="number"
+                  v-model="amount2"
+                  id="amount2"
+                />
               </div>
             </div>
             <p class="errMessage">
-              <span v-if="isError">
-                Devi inserire anche un operatore oltre al valore
+              <span v-if="isError"> Error on Amount or Operator </span>
+            </p>
+            <p class="errMessage">
+              <span v-if="isErrorBT">
+                The first value must be less than the second
               </span>
             </p>
           </form>
@@ -119,7 +131,9 @@ export default (await import("vue")).defineComponent({
       space: "",
       operator: "",
       amount: "",
+      amount2: "",
       isError: false,
+      isErrorBT: false,
     };
   },
   props: {
@@ -143,31 +157,59 @@ export default (await import("vue")).defineComponent({
   methods: {
     async onFilter() {
       const form = this.$refs.filForm;
-      // const closeBtn = this.$refs.closeBtn;
-      if (form.amount.value && !form.operator.value) {
+      if (
+        (form.amount.value && !form.operator.value) ||
+        (!form.amount.value && form.operator.value)
+      ) {
         this.isError = true;
+      } else if (
+        parseInt(form.amount.value) >= parseInt(form.amount2.value) &&
+        form.operator.value === "BT"
+      ) {
+        console.log("ELSE IF", form.amount.value, form.amount2.value);
+        this.isErrorBT = true;
       } else {
         this.isError = false;
+        this.isErrorBT = false;
         try {
           const result = await getTransactions(
             this.pageSize,
             0,
-            this.space,
-            this.category,
-            this.search
+            this.space != "" ? this.space : null,
+            this.category != "" ? this.category : null,
+            this.search != "" ? this.search : null,
+            this.amount != "" ? this.amount : null,
+            this.operator != "" ? this.operator : null,
+            this.operator === "BT" ? this.amount2 : null
           );
           console.log(result);
-          // aggiungere nel form l'input per amount e collegarlo al back-end
           // richiamare un metodo (dichiarato in Home) e utilizzarlo per cambiare this.totalTransactions, this.totalPages e this.transactions
         } catch (err) {
           console.log(err);
         }
       }
     },
-    async onChangeOperator() {
-      console.log(this.$refs.filForm);
-      console.log("CHANGE OPERATOR", this.$refs.filForm.operator.value);
-      return true;
+    onChangeOperator(isDefault = true) {
+      // console.log("CHANGE OPERATOR", this.$refs.filForm.operator.value);
+      const op = this.$refs.filForm.operator.value;
+      const amount = document.getElementById("amount-conteiner");
+      const operator = document.getElementById("operator-conteiner");
+      const amount2 = document.getElementById("amount2-conteiner");
+      if (op == "BT" && isDefault) {
+        // console.log("BETWEEN", op);
+        console.log(this.$refs.filForm);
+        amount.classList.remove("col-6");
+        amount.classList.add("col-4");
+        operator.classList.remove("col-6");
+        operator.classList.add("col-4");
+        amount2.classList.remove("d-none");
+      } else {
+        amount.classList.add("col-6");
+        amount.classList.remove("col-4");
+        operator.classList.add("col-6");
+        operator.classList.remove("col-4");
+        amount2.classList.add("d-none");
+      }
     },
     async resetData() {
       this.search = "";
@@ -175,7 +217,10 @@ export default (await import("vue")).defineComponent({
       this.space = "";
       this.operator = "";
       this.amount = "";
+      this.amount2 = "";
       this.isError = false;
+      this.isErrorBT = false;
+      this.onChangeOperator(false);
     },
   },
 });

@@ -79,7 +79,16 @@ class PgClient {
   }
 
   async getUserTransactions(userId, filters_param) {
-    const { page, pageSize, categoryName, space, search } = filters_param; //amount,
+    const {
+      page,
+      pageSize,
+      categoryName,
+      space,
+      search,
+      amount,
+      operator,
+      amount2,
+    } = filters_param;
     const filters = [];
 
     if (categoryName) {
@@ -96,42 +105,35 @@ class PgClient {
       );
     }
 
-    // if (amount) {
-    //   const value = amount.split(";");
-
-    //   switch (value[0]) {
-    //     case 'EQ':
-    //       filters.push(`value = ${value[1]}`);
-    //       break;
-    //     case 'NE':
-    //       filters.push(`value != ${value[1]}`);
-    //       break;
-    //     case 'GT':
-    //       filters.push(`value > ${value[1]}`);
-    //       break;
-    //     case 'GE':
-    //       filters.push(`value >= ${value[1]}`);
-    //       break;
-    //     case 'LT':
-    //       filters.push(`value < ${value[1]}`);
-    //       break;
-    //     case 'LE':
-    //       filters.push(`value <= ${value[1]}`);
-    //       break;
-    //     case 'BT':
-    //       filters.push(`(value >= ${value[1]} AND value <= ${value[2]})`);
-    //       break;
-    //   }
-    // }
-
-    // console.log("FILTERS", filters.length > 0 ? true : false);
+    if (operator) {
+      switch (operator) {
+        case "EQ":
+          filters.push(`t."value" = ${amount}`);
+        break;
+        case "NE":
+          filters.push(`t."value" != ${amount}`);
+        break;
+        case "GT":
+          filters.push(`t."value" > ${amount}`);
+        break;
+        case "GE":
+          filters.push(`t."value" >= ${amount}`);
+        break;
+        case "LT":
+          filters.push(`t."value" < ${amount}`);
+        break;
+        case "LE":
+          filters.push(`t."value" <= ${amount}`);
+        break;
+        case "BT":
+          filters.push(`(t."value" >= ${amount} AND t."value" <= ${amount2})`);
+        break;
+      }
+    }
 
     const result = await pool.query(
       `SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
-        ${filters.length >
-        0
-        ? " AND "
-        : ""}  ${filters.join(" AND ")}`,
+        ${filters.length > 0 ? " AND " : ""}  ${filters.join(" AND ")}`,
       [userId]
     );
     const count = parseInt(result.rows[0].c);
