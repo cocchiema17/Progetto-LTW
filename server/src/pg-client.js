@@ -210,9 +210,9 @@ class PgClient {
     SELECT 
     type,
     COUNT(*) as count,
-    SUM(CASE WHEN "type" = 'expense' THEN "value"*-1 ELSE "value" END) as total,
-    to_char("transactionDate"::date, 'Month') as month,
-    date_part('year', "transactionDate"::date) as year 
+    SUM(value) as total,
+    date_part('year', "transactionDate"::date) as year,
+    date_part('month', "transactionDate"::date) as month 
     FROM transaction t JOIN space s ON t."spaceId" = s."id"
     WHERE "userId" = $1 AND s.id = $2
     GROUP BY "type", year, month
@@ -231,14 +231,30 @@ class PgClient {
   async getLineChartData(userId, spaceId) {
     // torna il valore di uno space sempre su base mensile
     const { rows } = await pool.query(`
-      SELECT 
-      SUM(CASE WHEN "type" = 'expense' THEN "value"*-1 ELSE "value" END) as value,
-      to_char("transactionDate"::date, 'Month') as month,
-      date_part('year', "transactionDate"::date) as year 
-      FROM transaction t JOIN space s ON t."spaceId" = s."id"
-      WHERE "userId" = $1 AND s.id = $2
-      GROUP BY s.id, type, year, month
-      ORDER BY year, month`,
+    WITH subquery AS  (
+        SELECT
+            date_part('year', "transactionDate"::date) as year,
+            date_part('month', "transactionDate"::date) as month,
+            SUM(CASE WHEN type = 'expense' THEN -value ELSE value END) AS value
+          FROM transaction t JOIN space s ON t."spaceId" = s."id"
+            WHERE "userId" = $1 AND s.id = $2
+        GROUP BY
+            date_part('month', "transactionDate"::date),
+      date_part('year', "transactionDate"::date) 
+        ORDER BY
+      date_part('year', "transactionDate"::date),
+            date_part('month', "transactionDate"::date)
+    )   
+    SELECT
+      A.year,
+        A.month,
+        SUM(B.value) AS value
+    FROM
+        subquery A
+      JOIN subquery B 
+      ON ((B.year < A.year OR (B.year = A.year and B.month <= A.month)) )
+    GROUP by A.year, A.month
+    ORDER by A.year, A.month ASC`,
       [userId, spaceId]);
     return rows;
   }
