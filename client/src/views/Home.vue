@@ -2,40 +2,52 @@
   <div class="home-container">
     <Navbar :user="user" />
 
-    <div class="container-fluid h-100 m-0 p-0">
-      <div class="row p-3">
-        <div class="col-8">
-          <select class="form-select" v-model="chartSpace">
-            <option v-for="(s, idx) in spaces" :key="idx" :value="idx">
-              {{ s.name }}
-            </option>
-          </select>
-        </div>
+    <Charts />
 
-        <div class="col-2">
-          <input class="form-control" type="date" />
-        </div>
+    <TableHeader
+      :totalTransactions="totalTransactions"
+      :pageSize="pageSize"
+      :transactions="transactions"
+      :totalPages="totalPages"
+      @new-tx="onNewTx"
+    />
+    <table class="table table-hover align-middle table-bordered">
+      <thead class="sticky-top">
+        <tr class="table-light no-border-top">
+          <th scope="col">#</th>
+          <th scope="col">Title</th>
+          <th scope="col">Description</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Space</th>
+          <th scope="col">Category</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="t in transactions" :key="t.id">
+          <th scope="row">{{ t.row_number }}</th>
+          <td>{{ t.title }}</td>
+          <td>{{ t.description }}</td>
+          <td :class="t.type == 'expense' ? 'text-danger' : 'text-success'">
+            {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
+          </td>
+          <td>{{ t.spaceName }}</td>
+          <td>{{ t.categoryName }}</td>
+          <td>
+            {{ new Date(t.transactionDate).toLocaleDateString() }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-        <div class="col-2">
-          <input class="form-control" type="date" />
-        </div>
-      </div>
-
-      <!--<div class="container-fluid charts-container border m-0 p-3">
-        <PieChart :transactions="transactions" />
-      </div>-->
-      <Charts :chartSpace="chartSpace" />
-
-      <div
-        class="table-container container-fluid m-0 p-0 justify-content-center"
-      >
-        <TableHeader
-          :totalTransactions="totalTransactions"
-          :pageSize="pageSize"
-          :transactions="transactions"
+    <!-- <ul class="nav justify-content-center">
+      <li class="nav-item">
+        <PaginationButtons
           :totalPages="totalPages"
-          @new-tx="onNewTx"
-        />
+          :pageSize="pageSize"
+          :selectedPage="selectedPage"
+          @page-clicked="onPageClicked"
+        /> -->
         <div class="table-scroll">
           <table class="table table-hover align-middle table-bordered">
             <thead class="sticky-top">
@@ -82,8 +94,8 @@
           </li>
         </ul>
       </div>
-    </div>
-  </div>
+    <!-- </div>
+  </div> -->
 </template>
 
 <script>
@@ -209,30 +221,6 @@ export default {
 </script>
 
 <style scoped>
-.home-container {
-  padding-bottom: 60px;
-  height: 100%;
-}
-
-.charts-wrapper {
-  max-height: 40vh;
-}
-
-.charts-container {
-  height: 40%;
-}
-
-.table-container {
-  height: 60%;
-}
-
-.table-scroll {
-  height: 77%;
-  overflow-y: scroll;
-  overflow-x: none;
-  margin-bottom: 10px;
-}
-
 .no-border-top {
   border-top: 0 !important;
 }
