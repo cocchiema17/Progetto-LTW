@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "./router";
 
 axios.interceptors.request.use(
   (config) => {
@@ -12,6 +13,20 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+axios.interceptors.response.use((response) => {
+  return response
+}, (error) => {
+  if (error.response.status === 401) {
+    localStorage.removeItem("csrfToken");
+    router.push('/login');
+  }
+  return Promise.reject(error)
+})
+
+const getChartsData = (spaceId) => {
+  return axios.get("/api/charts", { params: { spaceId } });
+}
 
 const logout = () => {
   return axios.post("/api/auth/logout");
@@ -58,4 +73,5 @@ export {
   logout,
   createTransaction,
   createSpace,
+  getChartsData
 };

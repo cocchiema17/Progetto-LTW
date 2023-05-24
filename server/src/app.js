@@ -12,6 +12,7 @@ const logout = require("./routes/auth/logout-router");
 const category = require("./routes/category-router");
 const space = require("./routes/space-router");
 const transaction = require("./routes/transaction-router");
+const chart = require("./routes/chart-router");
 
 const errorHandler = require("./middlewares/error-handler");
 const NotFoundError = require("./errors/not-found-error");
@@ -36,6 +37,7 @@ app.use("/api/auth", logout);
 app.use("/api", category);
 app.use("/api", space);
 app.use("/api", transaction);
+app.use("/api", chart);
 
 app.all("*", (req, res) => {
   throw new NotFoundError();

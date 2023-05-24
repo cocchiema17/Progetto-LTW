@@ -128,27 +128,16 @@ class PgClient {
 
     const result = await pool.query(
       `SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
-        ${filters.length >
-        0
-        ? " AND "
-        : ""}  ${filters.join(" AND ")}`,
-      [userId]
+        ${filters.length > 0 ? " AND " : ""}  ${filters.join(" AND ")}`, [userId]
     );
     const count = parseInt(result.rows[0].c);
-    // console.log("COUNT: ", count);
 
     const { rows } = await pool.query(
-      `SELECT t.*, s."name" as "spaceName", s."userId" FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1 ${
-        filters.length > 0 ? " AND " : ""
-      } ${filters.join(
-        " AND "
-      )} ORDER BY "transactionDate" DESC LIMIT $2 OFFSET $3`,
+      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY "transactionDate" DESC ) 
+        FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
+       ${filters.length > 0 ? " AND " : ""} ${filters.join(" AND ")} LIMIT $2 OFFSET $3`,
       [userId, pageSize, pageSize * page]
     );
-
-    // console.log("PAGE: ", page);
-    // console.log("PAGE SIZE: ", pageSize);
-    // console.log("TOTAL PAGES: ", Math.ceil(count / pageSize));
 
     return {
       totalElements: count,
@@ -191,8 +180,7 @@ class PgClient {
       );
 
       const { rows } = await client.query(
-        `
-        INSERT INTO transaction (title, description, type, value, "categoryName", "spaceId", "transactionDate")
+        `INSERT INTO transaction (title, description, type, value, "categoryName", "spaceId", "transactionDate")
         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
         [
           payload.title,
@@ -214,6 +202,45 @@ class PgClient {
     } finally {
       client.release();
     }
+  }
+
+  async getBarChartData(userId, spaceId) {
+    // 2 barre verticali per mese: entrate e uscite per uno space
+    const { rows } = await pool.query(`
+    SELECT 
+    type,
+    COUNT(*) as count,
+    SUM(CASE WHEN "type" = 'expense' THEN "value"*-1 ELSE "value" END) as total,
+    to_char("transactionDate"::date, 'Month') as month,
+    date_part('year', "transactionDate"::date) as year 
+    FROM transaction t JOIN space s ON t."spaceId" = s."id"
+    WHERE "userId" = $1 AND s.id = $2
+    GROUP BY "type", year, month
+    ORDER BY year, month`,
+      [userId, spaceId]);
+
+    return rows;
+  }
+
+  async getPieChartData(userId, spaceId) {
+    // torta che conta le categorie in uno space
+    const { rows } = await pool.query('SELECT "categoryName", COUNT(*) FROM transaction t JOIN space s ON t."spaceId" = s."id" WHERE "userId" = $1 AND s.id = $2 GROUP BY "categoryName"', [userId, spaceId]);
+    return rows;
+  }
+
+  async getLineChartData(userId, spaceId) {
+    // torna il valore di uno space sempre su base mensile
+    const { rows } = await pool.query(`
+      SELECT 
+      SUM(CASE WHEN "type" = 'expense' THEN "value"*-1 ELSE "value" END) as value,
+      to_char("transactionDate"::date, 'Month') as month,
+      date_part('year', "transactionDate"::date) as year 
+      FROM transaction t JOIN space s ON t."spaceId" = s."id"
+      WHERE "userId" = $1 AND s.id = $2
+      GROUP BY s.id, type, year, month
+      ORDER BY year, month`,
+      [userId, spaceId]);
+    return rows;
   }
 }
 

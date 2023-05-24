@@ -122,7 +122,7 @@
 import { mapGetters } from "vuex";
 import { createTransaction } from "../api";
 import MoneyInput from "./MoneyInput";
-import { useToast, TYPE } from "vue-toastification";
+import { TYPE } from "vue-toastification";
 
 export default {
   name: "NewTransactionModalComp",
@@ -137,10 +137,6 @@ export default {
   },
   components: { MoneyInput },
   props: ["name"],
-  setup() {
-    const toast = useToast();
-    return { toast };
-  },
   data() {
     return {
       title: "",
@@ -169,12 +165,12 @@ export default {
             value: this.value,
           });
 
-          (tx.spaceName = this.spaces[this.spaceIdx].name),
-            (this.formValidated = false);
+          tx.spaceName = this.spaces[this.spaceIdx].name,
+          this.formValidated = false;
 
           this.$emit("new-tx", tx);
           closeBtn.click();
-          this.newToast("Transaction added", TYPE.SUCCESS);
+          this.newToast("Transaction added");
         } catch (err) {
           console.log(err);
           this.newToast("Transaction creation failed", TYPE.ERROR);
@@ -182,24 +178,7 @@ export default {
       } else {
         this.formValidated = true;
       }
-    },
-    newToast(msg, type) {
-      this.toast(msg, {
-        position: "bottom-right",
-        timeout: 3000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 1.0,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-        type,
-      });
-    },
+    }
   },
 };
 </script>
