@@ -97,22 +97,32 @@
             </p>
           </form>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="justify-content: space-between">
           <button
-            type="button"
-            class="btn btn-secondary"
-            @click.prevent="resetData"
-          >
-            Reset
-          </button>
-
-          <button
-            @click.prevent="onFilter"
             type="button"
             class="btn btn-primary"
+            @click.prevent="resetFilters()"
           >
-            Filter
+            Reset Filters
           </button>
+
+          <div>
+            <button
+              type="button"
+              class="btn btn-secondary me-3"
+              @click.prevent="resetData"
+            >
+              Reset
+            </button>
+
+            <button
+              @click.prevent="onFilter"
+              type="button"
+              class="btn btn-primary"
+            >
+              Filter
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -221,6 +231,10 @@ export default (await import("vue")).defineComponent({
       this.isError = false;
       this.isErrorBT = false;
       this.onChangeOperator(false);
+    },
+    async resetFilters() {
+      this.resetData();
+      this.onFilter();
     },
   },
 });

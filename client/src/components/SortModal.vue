@@ -60,11 +60,11 @@
           </button>
 
           <button
-            @click.prevent="onFilter"
+            @click.prevent="onSort"
             type="button"
             class="btn btn-primary"
           >
-            Filter
+            Sort
           </button>
         </div>
       </div>

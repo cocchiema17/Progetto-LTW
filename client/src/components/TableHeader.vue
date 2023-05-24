@@ -23,7 +23,14 @@
       >
         Filter
       </button>
-      <button type="button" class="btn btn-outline-primary">Sort</button>
+      <button
+        type="button"
+        class="btn btn-outline-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#sortModal"
+      >
+        Sort
+      </button>
       <button type="button" class="btn btn-outline-primary">Download</button>
     </div>
     <button
@@ -49,12 +56,14 @@
       :transactions="transactions"
       :totalPages="totalPages"
     />
+    <SortModal name="sortModal" />
   </div>
 </template>
 
 <script>
 import NewTransactionModal from "./NewTransactionModal";
 import FilterModal from "./FilterModal";
+import SortModal from "./SortModal";
 import NewSpaceModal from "./NewSpaceModal";
 
 export default {
@@ -78,6 +87,6 @@ export default {
       required: true,
     },
   },
-  components: { NewTransactionModal, NewSpaceModal, FilterModal },
+  components: { NewTransactionModal, NewSpaceModal, FilterModal, SortModal },
 };
 </script>
