@@ -247,6 +247,11 @@ class PgClient {
       [userId, spaceId]);
     return rows;
   }
+
+  // TO DO
+  async deleteTransacrion(){
+
+  }
 }
 
 module.exports = new PgClient();

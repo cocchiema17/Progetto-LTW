@@ -14,14 +14,10 @@
         <div class="modal-body">
           <form ref="sortForm" novalidate>
             <div class="mb-3">
-              <label for="search" class="form-label">Search:</label>
-              <input type="search" id="search" v-model="search" />
-            </div>
-            <div class="mb-3">
               <label class="form-check-label" for="radioButton4">
-                Space:
+                Date:
               </label>
-              <select v-model="space">
+              <select class="form-control" v-model="space">
                 <option value="" selected>None</option>
                 <option
                   v-for="space in this.$store.state.spaces"
@@ -34,9 +30,9 @@
             </div>
             <div class="mb-3">
               <label class="form-check-label" for="radioButton5">
-                Category:
+                Amount:
               </label>
-              <select v-model="category">
+              <select class="form-control" v-model="category">
                 <option value="">None</option>
                 <option
                   v-for="category in this.$store.state.categories"

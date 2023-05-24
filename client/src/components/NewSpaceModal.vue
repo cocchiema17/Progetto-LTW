@@ -89,10 +89,14 @@ export default (await import("vue")).defineComponent({
           }
         }
       }
+      else {
+        this.errMessage = "The name must have at least 3 characters";
+      }
     },
     async resetData() {
       this.name = "";
-      this.isError = false;
+      // this.isError = false;
+      this.errMessage = "";
     },
   },
 });

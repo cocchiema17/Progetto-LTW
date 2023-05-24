@@ -41,12 +41,13 @@
             <thead class="sticky-top">
               <tr class="table-light no-border-top">
                 <th scope="col">#</th>
-                <th scope="col">Title</th>
-                <th scope="col">Description</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Space</th>
-                <th scope="col">Category</th>
-                <th scope="col">Date</th>
+                <th scope="col" @click="sortByColumn('title')" class="pointer">Title</th>
+                <th scope="col" @click="sortByColumn('description')" class="pointer">Description</th>
+                <th scope="col" @click="sortByColumn('amount')" class="pointer">Amount</th>
+                <th scope="col" @click="sortByColumn('space')" class="pointer">Space</th>
+                <th scope="col" @click="sortByColumn('category')" class="pointer">Category</th>
+                <th scope="col" @click="sortByColumn('date')" class="pointer">Date</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
@@ -64,6 +65,7 @@
                 <td>
                   {{ new Date(t.transactionDate).toLocaleDateString() }}
                 </td>
+                <td><img src="../assets/cestino.png" class="pointer" @click.prevent="deleteTransaction(t)"/></td>
               </tr>
             </tbody>
           </table>
@@ -112,6 +114,8 @@ export default {
       totalPages: 0,
       pageSize: 10,
       chartSpace: 0,
+      currentSort: "",
+      isSortAsc: true,
     };
   },
   components: {
@@ -178,6 +182,28 @@ export default {
       this.totalTransactions = totalElements;
       this.totalPages = totalPages;
     },
+    async sortByColumn(column) {
+      console.log(column);
+      console.log(this.currentSort);
+      console.log(this.isSortAsc);
+      if (column == this.currentSort){
+        this.isSortAsc = !this.isSortAsc;
+      }
+      else {
+        this.isSortAsc = true;
+        this.currentSort = column;
+      }
+
+      // this.transactions.sort((a, b) => {
+      //   if (this.isSortAsc)
+      //     return a[column] > b[column] ? 1 : -1;
+      //   else
+      //   return a[column] < b[column] ? 1 : -1;
+      // });
+    },
+    async deleteTransaction(transition) {
+      console.log("DELETE", transition);
+    }
   },
 };
 </script>
@@ -213,5 +239,9 @@ export default {
 
 .dropdown {
   text-align: center;
+}
+
+.pointer {
+  cursor: pointer;
 }
 </style>
