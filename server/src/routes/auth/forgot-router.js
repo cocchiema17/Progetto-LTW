@@ -5,9 +5,10 @@ const csrfProtection = require("../../middlewares/csrf-protection");
 const validationHandler = require("../../middlewares/validate-request-handler");
 const { body } = require("express-validator");
 const pgClient = require("../../pg-client");
-const transporter = require("../../mail");
+const { sendResetEmail } = require("../../mailer");
 const { randomBytes } = require("crypto");
 const router = express.Router();
+const BadRequestError = require("../../errors/bad-request-error");
 const { DateTime } = require("luxon");
 
 router.post("/forgot",
@@ -31,13 +32,7 @@ router.post("/forgot",
     const expiresAt = DateTime.utc().plus({ minutes: 30 }).toISO()
     await pgClient.saveResetToken(req.currentUser.id, resetToken, expiresAt);
 
-    await transporter.sendMail({
-      from: 'reset-password@finager.org', // sender address
-      to: email, // list of receivers
-      subject: "How to Reset your email :)", // Subject line
-      text: "Hello world?", // plain text body
-      html: `<a href="${req.hostname + ":4000/auth/reset/" + resetToken}">Reset yout password</a>`, // html body
-    });
+    await sendResetEmail(email, resetToken);
 
     res.sendStatus(204);
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="modal fade" id="newSpaceModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5 text-center">Add Space</h1>
@@ -24,10 +24,8 @@
                 v-model="name"
                 required
               />
-              <p class="errMessage">
-                <span v-if="isError">
-                  {{ errMessage }}
-                </span>
+              <p class="text-danger mt-1" v-if="errMessage">
+                {{ errMessage }}
               </p>
             </div>
           </form>
@@ -54,7 +52,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { createSpace, getSpaces } from "../api";
+import { createSpace } from "../api";
 import { useToast, TYPE } from "vue-toastification";
 
 export default (await import("vue")).defineComponent({
@@ -69,7 +67,6 @@ export default (await import("vue")).defineComponent({
   data() {
     return {
       name: "",
-      isError: false,
       errMessage: "",
     };
   },
@@ -78,20 +75,17 @@ export default (await import("vue")).defineComponent({
       const form = this.$refs.spForm;
       const closeBtn = this.$refs.closeBtn;
       if (form.checkValidity()) {
-        let isReqErr = false;
         try {
-          await createSpace(this.name);
+          const newSpace = await createSpace(this.name);
+          this.$store.dispatch("spaces", this.spaces.concat(newSpace));
+          closeBtn.click();
+          this.newToast("Space added", TYPE.SUCCESS);
+          this.resetData();
         } catch (err) {
-          this.errMessage = err.response.data.error.errors[0].message;
-          this.isError = true;
-          isReqErr = true;
-          this.newToast("Space creation failed", TYPE.ERROR);
-        } finally {
-          if (!isReqErr) {
-            closeBtn.click();
-            this.newToast("Space added", TYPE.SUCCESS);
-            this.resetData();
-            this.$store.dispatch("spaces", await getSpaces());
+          if (err.response && err.response.status == 400) {
+            this.errMessage = err.response.data.error.errors[0].message;
+          } else {
+            this.newToast("Space creation failed", TYPE.ERROR);
           }
         }
       }
@@ -100,30 +94,6 @@ export default (await import("vue")).defineComponent({
       this.name = "";
       this.isError = false;
     },
-    newToast(msg, type) {
-      this.toast(msg, {
-        position: "bottom-right",
-        timeout: 3000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 1.0,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-        type,
-      });
-    },
   },
 });
 </script>
-
-<style scoped>
-.errMessage {
-  color: red;
-  font-size: small;
-}
-</style>

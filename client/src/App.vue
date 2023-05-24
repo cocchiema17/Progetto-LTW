@@ -1,7 +1,7 @@
 <template>
   <div class="h-100">
     <router-view></router-view>
-    <Footer />
+    <Footer v-if="false"/>
   </div>
 </template>
 

@@ -13,7 +13,7 @@
           type="email"
           class="form-control"
           id="email"
-          v-model="form.email"
+          v-model="email"
           placeholder="name@example.com"
         />
         <label for="email">Email address</label>
@@ -27,14 +27,25 @@
 </template>
 
 <script>
+import { TYPE } from "vue-toastification";
+import { forgotPassword } from "../api";
+
 export default {
   name: "ForgotView",
   data() {
     return {
-      form: {
-        email: "",
-      },
+      email: "",
     };
+  },
+  methods: {
+    async submit() {
+      try {
+        await forgotPassword(this.email);
+        this.newToast("Please check your email!");
+      } catch (err) {
+        this.newToast("Something went wrong, please retry", TYPE.ERROR);
+      }
+    },
   },
 };
 </script>

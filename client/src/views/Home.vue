@@ -3,9 +3,28 @@
     <Navbar :user="user" />
 
     <div class="container-fluid h-100 m-0 p-0">
-      <div class="container-fluid charts-container border m-0 p-3">
-        <PieChart :transactions="transactions" />
+      <div class="row p-3">
+        <div class="col-8">
+          <select class="form-select" v-model="chartSpace">
+            <option v-for="(s, idx) in spaces" :key="idx" :value="idx">
+              {{ s.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-2">
+          <input class="form-control" type="date" />
+        </div>
+
+        <div class="col-2">
+          <input class="form-control" type="date" />
+        </div>
       </div>
+
+      <!--<div class="container-fluid charts-container border m-0 p-3">
+        <PieChart :transactions="transactions" />
+      </div>-->
+      <Charts :chartSpace="chartSpace" />
 
       <div
         class="table-container container-fluid m-0 p-0 justify-content-center"
@@ -31,8 +50,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(t, idx) in transactions" :key="t.id">
-                <th scope="row">{{ idx + 1 }}</th>
+              <tr v-for="t in transactions" :key="t.id">
+                <th scope="row">{{ t.row_number }}</th>
                 <td>{{ t.title }}</td>
                 <td>{{ t.description }}</td>
                 <td
@@ -50,12 +69,16 @@
           </table>
         </div>
 
-        <TableFooter
-          :totalPages="totalPages"
-          :pageSize="pageSize"
-          :selectedPage="selectedPage"
-          @page-clicked="onPageClicked"
-        />
+        <ul class="nav justify-content-center">
+          <li class="nav-item">
+            <PaginationButtons
+              :totalPages="totalPages"
+              :pageSize="pageSize"
+              :selectedPage="selectedPage"
+              @page-clicked="onPageClicked"
+            />
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -72,8 +95,9 @@ import {
 import { mapGetters } from "vuex";
 import Navbar from "../components/Navbar";
 import TableHeader from "../components/TableHeader";
-import TableFooter from "../components/TableFooter";
-import PieChart from "../components/PieChart";
+import PaginationButtons from "../components/PaginationButtons";
+import Charts from "../components/charts/Charts";
+import { TYPE } from "vue-toastification";
 
 export default {
   name: "HomePage",
@@ -87,13 +111,14 @@ export default {
       selectedPage: 0,
       totalPages: 0,
       pageSize: 10,
+      chartSpace: 0,
     };
   },
   components: {
     Navbar,
-    PieChart,
     TableHeader,
-    TableFooter,
+    PaginationButtons,
+    Charts,
   },
   async created() {
     try {
@@ -101,6 +126,7 @@ export default {
       this.$store.dispatch("user", user);
     } catch (err) {
       this.$router.push("/login");
+      return;
     }
 
     try {
@@ -117,7 +143,7 @@ export default {
       this.totalTransactions = results[2].totalElements;
       this.totalPages = results[2].totalPages;
     } catch (err) {
-      alert(err.message);
+      this.newToast("Failed to load data", TYPE.ERROR);
     }
   },
   methods: {
@@ -175,8 +201,9 @@ export default {
 }
 
 .table-scroll {
-  height: 65%;
+  height: 77%;
   overflow-y: scroll;
+  overflow-x: none;
   margin-bottom: 10px;
 }
 
