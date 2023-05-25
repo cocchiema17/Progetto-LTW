@@ -87,10 +87,10 @@
                 />
               </div>
             </div>
-            <p class="errMessage">
+            <p class="text-danger mt-1">
               <span v-if="isError"> Error on Amount or Operator </span>
             </p>
-            <p class="errMessage">
+            <p class="text-danger mt-1">
               <span v-if="isErrorBT">
                 The first value must be less than the second
               </span>
@@ -144,6 +144,9 @@ export default (await import("vue")).defineComponent({
       amount2: "",
       isError: false,
       isErrorBT: false,
+      totalElements: 0,
+      totalPages: 0,
+      value: {}
     };
   },
   props: {
@@ -192,8 +195,11 @@ export default (await import("vue")).defineComponent({
             this.operator != "" ? this.operator : null,
             this.operator === "BT" ? this.amount2 : null
           );
-          console.log(result);
+          // console.log(result);
           // richiamare un metodo (dichiarato in Home) e utilizzarlo per cambiare this.totalTransactions, this.totalPages e this.transactions
+          this.transactions = result.value;
+          this.totalTransactions = result.totalElements;
+          this.totalPages = result.totalPages;
         } catch (err) {
           console.log(err);
         }
@@ -241,8 +247,8 @@ export default (await import("vue")).defineComponent({
 </script>
 
 <style scoped>
-.errMessage {
+/* .errMessage {
   color: red;
   font-size: small;
-}
+} */
 </style>

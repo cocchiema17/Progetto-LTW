@@ -11,7 +11,7 @@
       :totalPages="totalPages"
       @new-tx="onNewTx"
     />
-    <table class="table table-hover align-middle table-bordered">
+    <!-- <table class="table table-hover align-middle table-bordered">
       <thead class="sticky-top">
         <tr class="table-light no-border-top">
           <th scope="col">#</th>
@@ -38,7 +38,7 @@
           </td>
         </tr>
       </tbody>
-    </table>
+    </table>  -->
 
     <!-- <ul class="nav justify-content-center">
       <li class="nav-item">
@@ -48,53 +48,74 @@
           :selectedPage="selectedPage"
           @page-clicked="onPageClicked"
         /> -->
-        <div class="table-scroll">
-          <table class="table table-hover align-middle table-bordered">
-            <thead class="sticky-top">
-              <tr class="table-light no-border-top">
-                <th scope="col">#</th>
-                <th scope="col" @click="sortByColumn('title')" class="pointer">Title</th>
-                <th scope="col" @click="sortByColumn('description')" class="pointer">Description</th>
-                <th scope="col" @click="sortByColumn('amount')" class="pointer">Amount</th>
-                <th scope="col" @click="sortByColumn('space')" class="pointer">Space</th>
-                <th scope="col" @click="sortByColumn('category')" class="pointer">Category</th>
-                <th scope="col" @click="sortByColumn('date')" class="pointer">Date</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="t in transactions" :key="t.id">
-                <th scope="row">{{ t.row_number }}</th>
-                <td>{{ t.title }}</td>
-                <td>{{ t.description }}</td>
-                <td
-                  :class="t.type == 'expense' ? 'text-danger' : 'text-success'"
-                >
-                  {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
-                </td>
-                <td>{{ t.spaceName }}</td>
-                <td>{{ t.categoryName }}</td>
-                <td>
-                  {{ new Date(t.transactionDate).toLocaleDateString() }}
-                </td>
-                <td><img src="../assets/cestino.png" class="pointer" @click.prevent="deleteTransaction(t)"/></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="table-scroll">
+      <table class="table table-hover align-middle table-bordered">
+        <thead class="sticky-top">
+          <tr class="table-light no-border-top">
+            <th scope="col">#</th>
+            <th scope="col" @click="sortByColumn('title')" class="pointer">
+              Title
+            </th>
+            <th
+              scope="col"
+              @click="sortByColumn('description')"
+              class="pointer"
+            >
+              Description
+            </th>
+            <th scope="col" @click="sortByColumn('value')" class="pointer">
+              Amount
+            </th>
+            <th scope="col" @click="sortByColumn('name')" class="pointer">
+              Space
+            </th>
+            <th scope="col" @click="sortByColumn('categoryName')" class="pointer">
+              Category
+            </th>
+            <th scope="col" @click="sortByColumn('date')" class="pointer">
+              Date
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="t in transactions" :key="t.id">
+            <th scope="row">{{ t.row_number }}</th>
+            <td>{{ t.title }}</td>
+            <td>{{ t.description }}</td>
+            <td :class="t.type == 'expense' ? 'text-danger' : 'text-success'">
+              {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
+            </td>
+            <td>{{ t.spaceName }}</td>
+            <td>{{ t.categoryName }}</td>
+            <td>
+              {{ new Date(t.transactionDate).toLocaleDateString() }}
+            </td>
+            <td>
+              <!-- <img
+                src="../assets/cestino.png"
+                class="pointer"
+                @click.prevent="deleteTransaction(t)"
+              /> -->
+              <i class="bi bi-trash-fill text-danger pointer"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-        <ul class="nav justify-content-center">
-          <li class="nav-item">
-            <PaginationButtons
-              :totalPages="totalPages"
-              :pageSize="pageSize"
-              :selectedPage="selectedPage"
-              @page-clicked="onPageClicked"
-            />
-          </li>
-        </ul>
-      </div>
-    <!-- </div>
+    <ul class="nav justify-content-center">
+      <li class="nav-item">
+        <PaginationButtons
+          :totalPages="totalPages"
+          :pageSize="pageSize"
+          :selectedPage="selectedPage"
+          @page-clicked="onPageClicked"
+        />
+      </li>
+    </ul>
+  </div>
+  <!-- </div>
   </div> -->
 </template>
 
@@ -196,26 +217,74 @@ export default {
     },
     async sortByColumn(column) {
       console.log(column);
-      console.log(this.currentSort);
-      console.log(this.isSortAsc);
-      if (column == this.currentSort){
+      if (column == this.currentSort) {
         this.isSortAsc = !this.isSortAsc;
       }
       else {
         this.isSortAsc = true;
         this.currentSort = column;
       }
-
-      // this.transactions.sort((a, b) => {
-      //   if (this.isSortAsc)
-      //     return a[column] > b[column] ? 1 : -1;
-      //   else
-      //   return a[column] < b[column] ? 1 : -1;
-      // });
+      try {
+        const result = await getTransactions(this.pageSize,
+            this.selectedPage);
+        console.log(result);
+      }
+      catch(err){
+        console.log(err);
+      }
     },
+    // async sortByColumn(column) {
+    //   if (column === this.currentSortColumn) {
+    //     this.isSortAsc = !this.isSortAsc;
+    //   } else {
+    //     this.isSortAsc = true;
+    //     this.currentSortColumn = column;
+    //   }
+
+    //   this.transactions.sort((a, b) => {
+    //     console.log("A: ", a);
+    //     console.log("B: ", b);
+    //     const valueA = this.getValueByColumn(a, column);
+    //     const valueB = this.getValueByColumn(b, column);
+
+    //     if (typeof valueA === "number" && typeof valueB === "number") {
+    //       return this.compareNumbers(valueA, valueB);
+    //     } else if (valueA instanceof Date && valueB instanceof Date) {
+    //       return this.compareDates(valueA, valueB);
+    //     } else {
+    //       return this.compareStrings(valueA, valueB);
+    //     }
+    //   });
+    // },
+
+    // getValueByColumn(item, column) {
+    //   const columnValue = item[column];
+
+    //   if (typeof columnValue === "string") {
+    //     return columnValue.toLowerCase(); // Converto in minuscolo per l'ordinamento non case-sensitive delle stringhe
+    //   }
+
+    //   return columnValue;
+    // },
+
+    // compareNumbers(a, b) {
+    //   return this.isSortAsc ? a - b : b - a;
+    // },
+
+    // compareDates(a, b) {
+    //   return this.isSortAsc
+    //     ? a.getTime() - b.getTime()
+    //     : b.getTime() - a.getTime();
+    // },
+
+    // compareStrings(a, b) {
+    //   if (a < b) return this.isSortAsc ? -1 : 1;
+    //   if (a > b) return this.isSortAsc ? 1 : -1;
+    //   return 0;
+    // },
     async deleteTransaction(transition) {
       console.log("DELETE", transition);
-    }
+    },
   },
 };
 </script>

@@ -78,6 +78,16 @@
                   </option>
                 </datalist>
               </div>
+              <!-- inserire input type="color" quando si inserisce una nuova categoria (d-none per nascondere)-->
+              <div class="col-4 ps-3 m-0" id="color-conteiner">
+                <label class="form-check-label" for="color"> Color: </label>
+                <input
+                  class="form-control"
+                  type="color"
+                  v-model="color"
+                  id="color"
+                />
+              </div>
               <div class="col-6 p-0 m-0">
                 <label for="space" class="form-label">Space</label>
                 <select
@@ -145,6 +155,7 @@ export default {
       file: null,
       categoryName: "",
       spaceIdx: 0,
+      color: "",
       value: null,
       formValidated: false,
     };

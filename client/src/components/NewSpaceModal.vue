@@ -53,16 +53,12 @@
 <script>
 import { mapGetters } from "vuex";
 import { createSpace } from "../api";
-import { useToast, TYPE } from "vue-toastification";
+import { TYPE } from "vue-toastification";
 
 export default (await import("vue")).defineComponent({
   name: "NewSpaceModalComp",
   computed: {
     ...mapGetters(["user", "spaces", "categories"]),
-  },
-  setup() {
-    const toast = useToast();
-    return { toast };
   },
   data() {
     return {
@@ -95,7 +91,6 @@ export default (await import("vue")).defineComponent({
     },
     async resetData() {
       this.name = "";
-      // this.isError = false;
       this.errMessage = "";
     },
   },
