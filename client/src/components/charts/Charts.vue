@@ -24,6 +24,7 @@
             <input
               class="form-control"
               type="date"
+              v-model="fromDate"
               :max="new Date().toISOString().split('T')[0]"
             />
           </div>
@@ -37,7 +38,9 @@
           <div class="col-10">
             <input
               class="form-control"
+              v-model="toDate"
               type="date"
+              :min="fromDate"
               :max="new Date().toISOString().split('T')[0]"
             />
           </div>
@@ -84,6 +87,8 @@ export default {
   data() {
     return {
       selectedSpace: null,
+      fromDate: null,
+      toDate: null,
       barChartData: [],
       lineChartData: [],
       pieChartData: [],
