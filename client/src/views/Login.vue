@@ -3,13 +3,6 @@
     <form class="centered-form" @submit.prevent="onSubmit" novalidate>
       <h1 class="display-6 mb-5 text-center">Login to Finager!</h1>
 
-      <Alert
-        v-if="serverMessage"
-        :msg="serverMessage"
-        :type="'danger'"
-        :key="'s-msg'"
-      />
-
       <div class="form-floating mb-3">
         <input
           type="email"
@@ -52,10 +45,6 @@
           Sign in
         </button>
 
-        <router-link class="link-primary forgot-password" to="forgot">
-          Forgot Password?
-        </router-link>
-
         <div class="hr-sect mt-3">or</div>
 
         <router-link class="btn btn-outline-primary mt-3" to="register">
@@ -67,11 +56,12 @@
 </template>
 
 <script>
-import Alert from "../components/Alert.vue";
+import { AxiosError } from "axios";
+import { login } from "../api";
+import { TYPE } from "vue-toastification";
 
 export default {
   name: "LoginView",
-  components: { Alert },
   data() {
     return {
       email: "",
@@ -81,8 +71,7 @@ export default {
         email: false,
         password: false,
       },
-      loginFailed: false,
-      serverMessage: null,
+      loginFailed: false
     };
   },
   computed: {
@@ -118,35 +107,25 @@ export default {
       return value && value.length ? value.length : 0;
     },
     async onSubmit() {
-      const response = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: this.email,
-          password: this.password,
-        }),
-      });
-
-      if (response.status === 200) {
-        this.serverMessage = null;
-        const data = await response.json();
-
+      try {
+        const data = await login(this.email, this.password);
+        console.log(data);
         localStorage.setItem("csrfToken", data.csrfToken);
         this.$store.dispatch("user", data.user);
+        this.$store.dispatch("isLogged", true);
         this.$router.push("/home");
-      } else {
-        if (response.status === 500) {
-          this.serverMessage = "Something unexpected occurred... please retry";
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          if (err.response.status == 400) {
+            this.newToast("Bad credentials", TYPE.ERROR);
+          } else {
+            this.newToast("Something went wrong", TYPE.ERROR);
+          }
+          this.loginFailed = true;
+          setTimeout(() => {
+            this.loginFailed = false;
+          }, 3000);
         }
-        this.loginFailed = true;
-        setTimeout(() => {
-          this.loginFailed = false;
-        }, 1000);
-        setTimeout(() => {
-          this.serverMessage = null;
-        }, 2000);
       }
     },
   },

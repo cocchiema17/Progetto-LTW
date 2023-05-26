@@ -25,7 +25,7 @@
               class="form-control"
               type="date"
               v-model="fromDate"
-              :max="new Date().toISOString().split('T')[0]"
+              :max="toDate"
             />
           </div>
         </div>
@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div class="mw-100 pb-3" style="height: 30vh">
+    <div class="mw-100 pb-3" style="height: 40vh">
       <div class="w-100 row p-3 h-100 flex-nowrap" style="overflow-x: auto">
         <div class="col-lg-5">
           <BarChart :data="barChartData" />
@@ -100,14 +100,26 @@ export default {
     }
   },
   watch: {
-    async selectedSpace(value) {
-      this.loadsCharts(value);
+    selectedSpace(value) {
+      if (value) {
+        this.loadsCharts(value, this.fromDate, this.toDate);
+      }
+    },
+    fromDate(value) {
+      if (this.selectedSpace) {
+        this.loadsCharts(this.selectedSpace, value, this.toDate);
+      }
+    },
+    toDate(value) {
+      if (this.selectedSpace) {
+        this.loadsCharts(this.selectedSpace, this.fromDate, value);
+      }
     },
   },
   methods: {
-    async loadsCharts(spaceId) {
+    async loadsCharts(spaceId, fromDate, toDate) {
       try {
-        const { data } = await getChartsData(spaceId);
+        const { data } = await getChartsData(spaceId, fromDate, toDate);
         this.pieChartData = data.pieChart;
         this.barChartData = data.barChart;
         this.lineChartData = data.lineChart;

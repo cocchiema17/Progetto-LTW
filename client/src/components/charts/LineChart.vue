@@ -34,8 +34,6 @@ export default {
       const labels = [];
       const data = [];
 
-      console.log(this.data);
-
       this.data.forEach((d) => {
         labels.push(`${d.month}, ${d.year}`);
         data.push(d.value);
