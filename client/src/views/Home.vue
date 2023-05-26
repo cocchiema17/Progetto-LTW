@@ -6,39 +6,10 @@
 
     <TableHeader
       :totalTransactions="totalTransactions"
-      :pageSize="pageSize"
-      :transactions="transactions"
       :totalPages="totalPages"
       @new-tx="onNewTx"
+      @new-filters="onNewFilters"
     />
-    <!-- <table class="table table-hover align-middle table-bordered">
-      <thead class="sticky-top">
-        <tr class="table-light no-border-top">
-          <th scope="col">#</th>
-          <th scope="col">Title</th>
-          <th scope="col">Description</th>
-          <th scope="col">Amount</th>
-          <th scope="col">Space</th>
-          <th scope="col">Category</th>
-          <th scope="col">Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="t in transactions" :key="t.id">
-          <th scope="row">{{ t.row_number }}</th>
-          <td>{{ t.title }}</td>
-          <td>{{ t.description }}</td>
-          <td :class="t.type == 'expense' ? 'text-danger' : 'text-success'">
-            {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
-          </td>
-          <td>{{ t.spaceName }}</td>
-          <td>{{ t.categoryName }}</td>
-          <td>
-            {{ new Date(t.transactionDate).toLocaleDateString() }}
-          </td>
-        </tr>
-      </tbody>
-    </table>  -->
 
     <!-- <ul class="nav justify-content-center">
       <li class="nav-item">
@@ -76,7 +47,11 @@
             >
               Category
             </th>
-            <th scope="col" @click="sortByColumn('date')" class="pointer">
+            <th
+              scope="col"
+              @click="sortByColumn('transactionDate')"
+              class="pointer"
+            >
               Date
             </th>
             <th scope="col"></th>
@@ -88,7 +63,7 @@
             <td>{{ t.title }}</td>
             <td>{{ t.description }}</td>
             <td :class="t.type == 'expense' ? 'text-danger' : 'text-success'">
-              {{ (t.type == "expense" ? "-" : "+") + t.value + " € " }}
+              {{ (t.type == "expense" ? "" : "+") + t.value + " € " }}
             </td>
             <td>{{ t.spaceName }}</td>
             <td>{{ t.categoryName }}</td>
@@ -96,13 +71,7 @@
               {{ new Date(t.transactionDate).toLocaleDateString() }}
             </td>
             <td>
-              <!-- <img
-                src="../assets/cestino.png"
-                class="pointer"
-                @click.prevent="deleteTransaction(t)"
-              /> -->
-
-              <button class="btn btn-outline-danger">
+              <button class="btn btn-outline-danger" @click="deleteTransaction(t)">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </td>
@@ -122,8 +91,6 @@
       </li>
     </ul>
   </div>
-  <!-- </div>
-  </div> -->
 </template>
 
 <script>
@@ -155,7 +122,8 @@ export default {
       pageSize: 10,
       chartSpace: 0,
       currentSort: "",
-      isSortAsc: true,
+      isSortAsc: false,
+      filters: {},
     };
   },
   components: {
@@ -177,7 +145,7 @@ export default {
       const results = await Promise.all([
         getSpaces(),
         getCategories(),
-        getTransactions(this.pageSize, 0),
+        getTransactions(0),
       ]);
 
       this.$store.dispatch("spaces", results[0]);
@@ -208,19 +176,38 @@ export default {
         });
       }
     },
-    async onPageClicked(page) {
+    onPageClicked(page) {
       this.selectedPage = page;
-      await this.fetchTransactions(page);
+      this.fetchTransactions(
+        page,
+        this.filters,
+        this.currentSort,
+        this.isSortAsc
+      );
     },
-    async fetchTransactions(page) {
+    async fetchTransactions(page, filters, sortColumn = null, asc = null) {
+      console.log("FETCH TRANSACTIONS", sortColumn, asc);
       const { totalElements, totalPages, value } = await getTransactions(
+        page,
         this.pageSize,
-        page
+        filters,
+        sortColumn,
+        asc
       );
 
       this.transactions = value;
       this.totalTransactions = totalElements;
       this.totalPages = totalPages;
+    },
+    onNewFilters(filters) {
+      this.filters = filters;
+      // console.log("FILTERS IN HOME", filters);
+      this.fetchTransactions(
+        this.selectedPage,
+        filters,
+        this.currentSort,
+        this.isSortAsc
+      );
     },
     async sortByColumn(column) {
       console.log(column);
@@ -230,62 +217,15 @@ export default {
         this.isSortAsc = true;
         this.currentSort = column;
       }
-      try {
-        const result = await getTransactions(this.pageSize, this.selectedPage);
-        console.log(result);
-      } catch (err) {
-        console.log(err);
-      }
+      console.log(this.currentSort);
+      console.log(this.isSortAsc);
+      this.fetchTransactions(
+        this.selectedPage,
+        this.filters,
+        this.currentSort,
+        this.isSortAsc
+      );
     },
-    // async sortByColumn(column) {
-    //   if (column === this.currentSortColumn) {
-    //     this.isSortAsc = !this.isSortAsc;
-    //   } else {
-    //     this.isSortAsc = true;
-    //     this.currentSortColumn = column;
-    //   }
-
-    //   this.transactions.sort((a, b) => {
-    //     console.log("A: ", a);
-    //     console.log("B: ", b);
-    //     const valueA = this.getValueByColumn(a, column);
-    //     const valueB = this.getValueByColumn(b, column);
-
-    //     if (typeof valueA === "number" && typeof valueB === "number") {
-    //       return this.compareNumbers(valueA, valueB);
-    //     } else if (valueA instanceof Date && valueB instanceof Date) {
-    //       return this.compareDates(valueA, valueB);
-    //     } else {
-    //       return this.compareStrings(valueA, valueB);
-    //     }
-    //   });
-    // },
-
-    // getValueByColumn(item, column) {
-    //   const columnValue = item[column];
-
-    //   if (typeof columnValue === "string") {
-    //     return columnValue.toLowerCase(); // Converto in minuscolo per l'ordinamento non case-sensitive delle stringhe
-    //   }
-
-    //   return columnValue;
-    // },
-
-    // compareNumbers(a, b) {
-    //   return this.isSortAsc ? a - b : b - a;
-    // },
-
-    // compareDates(a, b) {
-    //   return this.isSortAsc
-    //     ? a.getTime() - b.getTime()
-    //     : b.getTime() - a.getTime();
-    // },
-
-    // compareStrings(a, b) {
-    //   if (a < b) return this.isSortAsc ? -1 : 1;
-    //   if (a > b) return this.isSortAsc ? 1 : -1;
-    //   return 0;
-    // },
     async deleteTransaction(transition) {
       console.log("DELETE", transition);
     },
@@ -307,5 +247,13 @@ export default {
 
 .dropdown {
   text-align: center;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.pointer:hover {
+  text-decoration: underline;
 }
 </style>

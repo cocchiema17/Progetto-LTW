@@ -78,7 +78,7 @@ class PgClient {
     }
   }
 
-  async getUserTransactions(userId, filters_param) {
+  async getUserTransactions(userId, filters_param, sort_param) {
     const {
       page,
       pageSize,
@@ -89,6 +89,7 @@ class PgClient {
       operator,
       amount2,
     } = filters_param;
+    const { sortColumn, asc } = sort_param;
     const filters = [];
 
     if (categoryName) {
@@ -109,38 +110,44 @@ class PgClient {
       switch (operator) {
         case "EQ":
           filters.push(`t."value" = ${amount}`);
-        break;
+          break;
         case "NE":
           filters.push(`t."value" != ${amount}`);
-        break;
+          break;
         case "GT":
           filters.push(`t."value" > ${amount}`);
-        break;
+          break;
         case "GE":
           filters.push(`t."value" >= ${amount}`);
-        break;
+          break;
         case "LT":
           filters.push(`t."value" < ${amount}`);
-        break;
+          break;
         case "LE":
           filters.push(`t."value" <= ${amount}`);
-        break;
+          break;
         case "BT":
           filters.push(`(t."value" >= ${amount} AND t."value" <= ${amount2})`);
-        break;
+          break;
       }
     }
 
     const result = await pool.query(
       `SELECT COUNT(*) as c FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
-        ${filters.length > 0 ? " AND " : ""}  ${filters.join(" AND ")}`, [userId]
+        ${filters.length > 0 ? " AND " : ""}  ${filters.join(" AND ")}`,
+      [userId]
     );
     const count = parseInt(result.rows[0].c);
+    const sortStatemant = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
 
     const { rows } = await pool.query(
-      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY "transactionDate" DESC ) 
+      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY ${sortStatemant} ${
+        asc ? "ASC" : "DESC"
+      } ) 
         FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
-       ${filters.length > 0 ? " AND " : ""} ${filters.join(" AND ")} LIMIT $2 OFFSET $3`,
+       ${filters.length > 0 ? " AND " : ""} ${filters.join(
+        " AND "
+      )} LIMIT $2 OFFSET $3`,
       [userId, pageSize, pageSize * page]
     );
 
@@ -191,7 +198,8 @@ class PgClient {
           payload.title,
           payload.description,
           payload.value > 0 ? "revenue" : "expense",
-          Math.abs(payload.value),
+          // Math.abs(payload.value),
+          payload.value,
           payload.categoryName,
           payload.spaceId,
           payload.date,
@@ -211,7 +219,8 @@ class PgClient {
 
   async getBarChartData(userId, spaceId) {
     // 2 barre verticali per mese: entrate e uscite per uno space
-    const { rows } = await pool.query(`
+    const { rows } = await pool.query(
+      `
     SELECT 
     type,
     COUNT(*) as count,
@@ -222,25 +231,30 @@ class PgClient {
     WHERE "userId" = $1 AND s.id = $2
     GROUP BY "type", year, month
     ORDER BY year, month`,
-      [userId, spaceId]);
+      [userId, spaceId]
+    );
 
     return rows;
   }
 
   async getPieChartData(userId, spaceId) {
     // torta che conta le categorie in uno space
-    const { rows } = await pool.query('SELECT "categoryName", COUNT(*) FROM transaction t JOIN space s ON t."spaceId" = s."id" WHERE "userId" = $1 AND s.id = $2 GROUP BY "categoryName"', [userId, spaceId]);
+    const { rows } = await pool.query(
+      'SELECT "categoryName", COUNT(*) FROM transaction t JOIN space s ON t."spaceId" = s."id" WHERE "userId" = $1 AND s.id = $2 GROUP BY "categoryName"',
+      [userId, spaceId]
+    );
     return rows;
   }
 
   async getLineChartData(userId, spaceId) {
     // torna il valore di uno space sempre su base mensile
-    const { rows } = await pool.query(`
+    const { rows } = await pool.query(
+      `
     WITH subquery AS  (
         SELECT
             date_part('year', "transactionDate"::date) as year,
             date_part('month', "transactionDate"::date) as month,
-            SUM(CASE WHEN type = 'expense' THEN -value ELSE value END) AS value
+            SUM(value) AS value
           FROM transaction t JOIN space s ON t."spaceId" = s."id"
             WHERE "userId" = $1 AND s.id = $2
         GROUP BY
@@ -260,14 +274,13 @@ class PgClient {
       ON ((B.year < A.year OR (B.year = A.year and B.month <= A.month)) )
     GROUP by A.year, A.month
     ORDER by A.year, A.month ASC`,
-      [userId, spaceId]);
+      [userId, spaceId]
+    );
     return rows;
   }
 
   // TO DO
-  async deleteTransacrion(){
-
-  }
+  async deleteTransacrion() {}
 }
 
 module.exports = new PgClient();

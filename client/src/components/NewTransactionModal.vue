@@ -81,7 +81,7 @@
               </div>
               <!-- inserire input type="color" quando si inserisce una nuova categoria (d-none per nascondere)-->
               <div class="col-4 ps-3 m-0" id="color-conteiner">
-                <label class="form-check-label" for="color"> Color: </label>
+                <label class="form-check-label" for="color"> Color </label>
                 <input
                   class="form-control"
                   type="color"
@@ -120,7 +120,7 @@
             Close
           </button>
 
-          <button @click.prevent="onSave" type="button" class="btn btn-primary">
+          <button @click.prevent="onSave" type="button" class="btn btn-success">
             Save
           </button>
         </div>

@@ -9,10 +9,15 @@
             class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
+            ref="closeBtn"
           ></button>
         </div>
         <div class="modal-body">
-          <form ref="filForm" novalidate>
+          <form
+            ref="filForm"
+            :class="{ 'was-validated': formValidated }"
+            novalidate
+          >
             <div class="mb-3">
               <label for="search" class="form-label">Search:</label>
               <input
@@ -100,7 +105,7 @@
         <div class="modal-footer" style="justify-content: space-between">
           <button
             type="button"
-            class="btn btn-primary"
+            class="btn btn-success"
             @click.prevent="resetFilters()"
           >
             Reset Filters
@@ -118,7 +123,7 @@
             <button
               @click.prevent="onFilter"
               type="button"
-              class="btn btn-primary"
+              class="btn btn-success"
             >
               Filter
             </button>
@@ -130,7 +135,7 @@
 </template>
 
 <script>
-import { getTransactions } from "../api";
+import { TYPE } from "vue-toastification";
 
 export default (await import("vue")).defineComponent({
   name: "FilterModalComp",
@@ -144,32 +149,12 @@ export default (await import("vue")).defineComponent({
       amount2: "",
       isError: false,
       isErrorBT: false,
-      totalElements: 0,
-      totalPages: 0,
-      value: {}
     };
-  },
-  props: {
-    totalTransactions: {
-      type: Number,
-      required: true,
-    },
-    pageSize: {
-      type: Number,
-      required: true,
-    },
-    totalPages: {
-      type: Number,
-      required: true,
-    },
-    transactions: {
-      type: Array,
-      required: true,
-    },
   },
   methods: {
     async onFilter() {
       const form = this.$refs.filForm;
+      const closeBtn = this.$refs.closeBtn;
       if (
         (form.amount.value && !form.operator.value) ||
         (!form.amount.value && form.operator.value)
@@ -184,36 +169,26 @@ export default (await import("vue")).defineComponent({
       } else {
         this.isError = false;
         this.isErrorBT = false;
-        try {
-          const result = await getTransactions(
-            this.pageSize,
-            0,
-            this.space != "" ? this.space : null,
-            this.category != "" ? this.category : null,
-            this.search != "" ? this.search : null,
-            this.amount != "" ? this.amount : null,
-            this.operator != "" ? this.operator : null,
-            this.operator === "BT" ? this.amount2 : null
-          );
-          // console.log(result);
-          // richiamare un metodo (dichiarato in Home) e utilizzarlo per cambiare this.totalTransactions, this.totalPages e this.transactions
-          this.transactions = result.value;
-          this.totalTransactions = result.totalElements;
-          this.totalPages = result.totalPages;
-        } catch (err) {
-          console.log(err);
-        }
+        console.log("AMOUNT", this.amount);
+        this.$emit("new-filters", {
+          search: this.search || null,
+          space: this.space || null,
+          categoryName: this.category || null,
+          amount: typeof this.amount === "number" ? this.amount : null,
+          operator: this.operator || null,
+          amount2: typeof this.amount2 === "number" ? this.amount2 : null,
+        });
+        closeBtn.click();
+        this.newToast("Filters added", TYPE.SUCCESS);
       }
     },
+    // da modificare con le direttive Vue
     onChangeOperator(isDefault = true) {
-      // console.log("CHANGE OPERATOR", this.$refs.filForm.operator.value);
       const op = this.$refs.filForm.operator.value;
       const amount = document.getElementById("amount-conteiner");
       const operator = document.getElementById("operator-conteiner");
       const amount2 = document.getElementById("amount2-conteiner");
       if (op == "BT" && isDefault) {
-        // console.log("BETWEEN", op);
-        console.log(this.$refs.filForm);
         amount.classList.remove("col-6");
         amount.classList.add("col-4");
         operator.classList.remove("col-6");
@@ -225,6 +200,7 @@ export default (await import("vue")).defineComponent({
         operator.classList.add("col-6");
         operator.classList.remove("col-4");
         amount2.classList.add("d-none");
+        this.amount2 = "";
       }
     },
     async resetData() {
@@ -240,7 +216,10 @@ export default (await import("vue")).defineComponent({
     },
     async resetFilters() {
       this.resetData();
-      this.onFilter();
+      this.$emit("new-filters", {});
+      const closeBtn = this.$refs.closeBtn;
+      closeBtn.click();
+      this.newToast("Filters reset", TYPE.SUCCESS);
     },
   },
 });

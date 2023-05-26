@@ -20,14 +20,17 @@ router.get("/transactions",
     query("operator").optional(),
     query("amount2").optional(),
     query("search").optional(),
+    query("sortColumn").optional(),
+    query("asc").optional()
   ],
   validationHandler,
   async (req, res) => {
-    const { page, pageSize, space, categoryName, search, amount, operator, amount2 } = req.query;  //amount,
+    const { page, pageSize, space, categoryName, search, amount, operator, amount2, sortColumn, asc } = req.query;
 
     const { totalElements, totalPages, value } = await pgClient.getUserTransactions(
       req.currentUser.id,
-      { page, pageSize, space, categoryName, search, amount, operator, amount2 } 
+      { page, pageSize, space, categoryName, search, amount, operator, amount2 },
+      {sortColumn, asc}
     );
 
     res.send({ totalElements, totalPages, value });
@@ -57,6 +60,6 @@ router.post("/transactions",
 );
 
 // TO DO
-router.delete("/transactions", );
+router.delete("/transactions/:id", );
 
 module.exports = router;
