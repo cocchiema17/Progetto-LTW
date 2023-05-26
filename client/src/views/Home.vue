@@ -126,7 +126,6 @@
 
 <script>
 import {
-  getCurrentUser,
   getSpaces,
   getCategories,
   getTransactions,
@@ -165,14 +164,6 @@ export default {
     Charts,
   },
   async created() {
-    try {
-      const user = await getCurrentUser();
-      this.$store.dispatch("user", user);
-    } catch (err) {
-      this.$router.push("/login");
-      return;
-    }
-
     try {
       const results = await Promise.all([
         getSpaces(),
@@ -233,7 +224,7 @@ export default {
     },
     onNewFilters(filters) {
       this.filters = filters;
-      // console.log("FILTERS IN HOME", filters);
+
       this.fetchTransactions(
         this.selectedPage,
         filters,

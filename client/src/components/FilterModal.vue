@@ -15,7 +15,6 @@
         <div class="modal-body">
           <form
             ref="filForm"
-            :class="{ 'was-validated': formValidated }"
             novalidate
           >
             <div class="mb-3">

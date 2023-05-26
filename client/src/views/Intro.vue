@@ -5,10 +5,10 @@
         <span class="navbar-brand mb-0 h3">Finager</span>
 
         <ul class="nav nav-pills nav-fill">
-          <li class="nav-item">
+          <li class="nav-item" v-if="!user">
             <router-link to="/login" class="nav-link">Sign in</router-link>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" v-if="!user">
             <router-link to="/register" class="nav-link">Sign up</router-link>
           </li>
         </ul>
@@ -132,31 +132,20 @@
       </div>
     </div>
 
-    <!-- <footer id="contatti">
-      <h3>Contatti</h3>
-      <h5>
-        Indirizzo email: <a href="mailto:info@finager.com">info@finager.com</a>
-      </h5>
-      <h5>
-        Numero di telefono: <a href="tel:+391234567891">+39 1234567891</a>
-      </h5>
-      <a
-        href="https://www.instagram.com/"
-        target="_blank"
-        class="fa fa-instagram"
-      ></a>
-      <a
-        href="https://it-it.facebook.com/"
-        target="_blank"
-        class="fa fa-facebook"
-      ></a>
-    </footer> -->
+    <Footer />
   </main>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
+import Footer from "../components/Footer";
 export default {
   name: "IntroPage",
+  components: { Footer },
+  computed: {
+    ...mapGetters(["user"]),
+  },
   mounted() {
     const contents = [
       this.$refs["content-1"],
@@ -245,17 +234,6 @@ h2 {
   height: 30px;
   width: 30px;
   border-radius: 8px;
-}
-
-footer {
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  filter: drop-shadow(0px 1px 10px black);
-  padding: 5px;
 }
 
 a {

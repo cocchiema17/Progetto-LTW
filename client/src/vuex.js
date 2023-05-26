@@ -4,6 +4,7 @@ const state = {
   user: null,
   spaces: [],
   categories: [],
+  isLogged: false
 };
 
 const store = new Store({
@@ -17,17 +18,9 @@ const store = new Store({
     },
     categories: (state) => {
       return state.categories;
-    }
-  },
-  actions: {
-    user(context, user) {
-      context.commit("user", user);
     },
-    spaces(context, spaces) {
-      context.commit("spaces", spaces);
-    },
-    categories(context, categories) {
-      context.commit("categories", categories);
+    isLogged: (state) => {
+      return state.isLogged;
     }
   },
   mutations: {
@@ -39,8 +32,25 @@ const store = new Store({
     },
     categories(state, categories) {
       state.categories = categories;
+    },
+    isLogged(state, isLogged) {
+      state.isLogged = isLogged;
     }
-  }
+  },
+  actions: {
+    user(context, user) {
+      context.commit("user", user);
+    },
+    spaces(context, spaces) {
+      context.commit("spaces", spaces);
+    },
+    categories(context, categories) {
+      context.commit("categories", categories);
+    },
+    isLogged(context, isLogged) {
+      context.commit("isLogged", isLogged);
+    }
+  },
 });
 
 export default store;

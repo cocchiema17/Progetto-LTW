@@ -25,7 +25,7 @@
               class="form-control"
               type="date"
               v-model="fromDate"
-              :max="new Date().toISOString().split('T')[0]"
+              :max="toDate"
             />
           </div>
         </div>
@@ -100,14 +100,26 @@ export default {
     }
   },
   watch: {
-    async selectedSpace(value) {
-      this.loadsCharts(value);
+    selectedSpace(value) {
+      if (value) {
+        this.loadsCharts(value, this.fromDate, this.toDate);
+      }
+    },
+    fromDate(value) {
+      if (this.selectedSpace) {
+        this.loadsCharts(this.selectedSpace, value, this.toDate);
+      }
+    },
+    toDate(value) {
+      if (this.selectedSpace) {
+        this.loadsCharts(this.selectedSpace, this.fromDate, value);
+      }
     },
   },
   methods: {
-    async loadsCharts(spaceId) {
+    async loadsCharts(spaceId, fromDate, toDate) {
       try {
-        const { data } = await getChartsData(spaceId);
+        const { data } = await getChartsData(spaceId, fromDate, toDate);
         this.pieChartData = data.pieChart;
         this.barChartData = data.barChart;
         this.lineChartData = data.lineChart;

@@ -1,5 +1,4 @@
 import axios from "axios";
-import router from "./router";
 
 axios.interceptors.request.use(
   (config) => {
@@ -14,27 +13,27 @@ axios.interceptors.request.use(
   }
 );
 
-axios.interceptors.response.use((response) => {
-  return response
-}, (error) => {
-  if (error.response.status === 401) {
-    localStorage.removeItem("csrfToken");
-    router.push('/login');
-  }
-  return Promise.reject(error)
-})
 
-const getChartsData = (spaceId) => {
-  return axios.get("/api/charts", { params: { spaceId } });
+const getChartsData = (spaceId, fromDate, toDate) => {
+  const params = { spaceId };
+
+  if (fromDate) params.fromDate = fromDate;
+  if (toDate) params.toDate = toDate;
+
+  return axios.get("/api/charts", { params });
 }
 
 const logout = () => {
   return axios.post("/api/auth/logout");
 };
 
-const getCurrentUser = async () => {
-  const { data } = await axios.get("/api/auth/currentUser");
+const login = async (email, password) => {
+  const { data } = await axios.post("/api/auth/signin", { email, password });
   return data;
+};
+
+const getCurrentUser = () => {
+  return axios.get("/api/auth/currentUser");
 };
 
 const getSpaces = async () => {
@@ -53,18 +52,18 @@ const getTransactions = async (page = 0, pageSize = 10, filters = {}, sortColumn
     page,
     pageSize
   }
-  
+
   Object.entries(filters).forEach(e => {
-    if(e[1] && e[1] != "") {
+    if (e[1] && e[1] != "") {
       query[e[0]] = e[1];
     }
   });
   // console.log("API FILTERS", filters);
-  if (sortColumn && asc){
+  if (sortColumn && asc) {
     query.sortColumn = sortColumn;
     query.asc = asc;
   }
-  console.log("API", page, pageSize, filters, sortColumn, asc);
+
   const { data } = await axios.get("/api/transactions", {
     params: query,
   });
@@ -90,6 +89,7 @@ export {
   getSpaces,
   getCategories,
   getTransactions,
+  login,
   logout,
   createTransaction,
   deleteTransaction,

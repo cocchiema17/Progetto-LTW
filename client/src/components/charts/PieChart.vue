@@ -40,7 +40,7 @@ export default {
         alpha: 0.5,
       });
       const borderColor = backgroundColor.map((c) => color(c).alpha(1).hexa());
-      console.log(borderColor);
+
       const datasets = [
         {
           data: [],

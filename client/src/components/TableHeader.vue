@@ -39,7 +39,6 @@
     <NewTransactionModal
       name="newTransactionModal"
       :totalTransactions="totalTransactions"
-      :pageSize="pageSize"
       @new-tx="(e) => $emit('new-tx', e)"
     />
     <NewSpaceModal name="newSpaceModal" />
@@ -72,7 +71,6 @@ export default {
   components: { NewTransactionModal, NewSpaceModal, FilterModal },
   methods: {
     onNewFilters(filters) {
-      console.log("FILTERS IN TABLE HEADER", filters);
       this.filtersNumber = Object.values(filters).filter(f => f && f != "").length;
       this.$emit('new-filters', filters);
     }
