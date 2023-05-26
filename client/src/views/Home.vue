@@ -47,7 +47,11 @@
             >
               Category
             </th>
-            <th scope="col" @click="sortByColumn('transactionDate')" class="pointer">
+            <th
+              scope="col"
+              @click="sortByColumn('transactionDate')"
+              class="pointer"
+            >
               Date
             </th>
             <th scope="col"></th>
@@ -67,7 +71,9 @@
               {{ new Date(t.transactionDate).toLocaleDateString() }}
             </td>
             <td>
-              <i class="bi bi-trash-fill text-danger pointer" @click="deleteTransaction(t)"></i>
+              <button class="btn btn-outline-danger" @click="deleteTransaction(t)">
+                <i class="bi bi-trash-fill"></i>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -172,7 +178,12 @@ export default {
     },
     onPageClicked(page) {
       this.selectedPage = page;
-      this.fetchTransactions(page, this.filters, this.currentSort, this.isSortAsc);
+      this.fetchTransactions(
+        page,
+        this.filters,
+        this.currentSort,
+        this.isSortAsc
+      );
     },
     async fetchTransactions(page, filters, sortColumn = null, asc = null) {
       console.log("FETCH TRANSACTIONS", sortColumn, asc);
@@ -191,7 +202,12 @@ export default {
     onNewFilters(filters) {
       this.filters = filters;
       // console.log("FILTERS IN HOME", filters);
-      this.fetchTransactions(this.selectedPage, filters, this.currentSort, this.isSortAsc);
+      this.fetchTransactions(
+        this.selectedPage,
+        filters,
+        this.currentSort,
+        this.isSortAsc
+      );
     },
     async sortByColumn(column) {
       console.log(column);
@@ -231,5 +247,13 @@ export default {
 
 .dropdown {
   text-align: center;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.pointer:hover {
+  text-decoration: underline;
 }
 </style>

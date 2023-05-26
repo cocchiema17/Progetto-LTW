@@ -138,11 +138,12 @@ class PgClient {
       [userId]
     );
     const count = parseInt(result.rows[0].c);
+    const sortStatemant = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
 
     const { rows } = await pool.query(
-      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY ${
-        sortColumn ? sortColumn : "'transactionDate'"
-      } ${asc ? "" : "DESC"} ) 
+      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY ${sortStatemant} ${
+        asc ? "ASC" : "DESC"
+      } ) 
         FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
        ${filters.length > 0 ? " AND " : ""} ${filters.join(
         " AND "
@@ -253,7 +254,7 @@ class PgClient {
         SELECT
             date_part('year', "transactionDate"::date) as year,
             date_part('month', "transactionDate"::date) as month,
-            SUM(CASE WHEN type = 'expense' THEN -value ELSE value END) AS value
+            SUM(value) AS value
           FROM transaction t JOIN space s ON t."spaceId" = s."id"
             WHERE "userId" = $1 AND s.id = $2
         GROUP BY
