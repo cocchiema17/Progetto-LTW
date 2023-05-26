@@ -41,7 +41,7 @@
             Close
           </button>
 
-          <button @click.prevent="onSave" type="button" class="btn btn-primary">
+          <button @click.prevent="onSave" type="button" class="btn btn-success">
             Save
           </button>
         </div>

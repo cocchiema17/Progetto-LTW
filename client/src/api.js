@@ -47,9 +47,26 @@ const getCategories = async () => {
   return data.value;
 };
 
-const getTransactions = async (pageSize, page, space, categoryName, search, amount, operator, amount2) => {
+// non prende 0 come valore di amount e amount2
+const getTransactions = async (page = 0, pageSize = 10, filters = {}, sortColumn = null, asc = null) => {
+  const query = {
+    page,
+    pageSize
+  }
+  
+  Object.entries(filters).forEach(e => {
+    if(e[1] && e[1] != "") {
+      query[e[0]] = e[1];
+    }
+  });
+  // console.log("API FILTERS", filters);
+  if (sortColumn && asc){
+    query.sortColumn = sortColumn;
+    query.asc = asc;
+  }
+  console.log("API", page, pageSize, filters, sortColumn, asc);
   const { data } = await axios.get("/api/transactions", {
-    params: { pageSize, page, space, categoryName, search, amount, operator, amount2 },
+    params: query,
   });
   return data;
 };

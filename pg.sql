@@ -20,10 +20,11 @@ create table "passwordReset" (
 
 create table "space" (
   "id" bigserial,
-  "name" varchar(40) not null unique,
+  "name" varchar(40) not null,
   "userId" uuid not null,
   "createdAt" timestamp not null default CURRENT_TIMESTAMP check ("createdAt" <= CURRENT_TIMESTAMP),
-  primary key ("id") 
+  primary key ("id"), 
+  unique ("name", "userId")
 );
 
 create table "category" (
