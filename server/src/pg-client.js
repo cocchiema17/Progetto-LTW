@@ -138,12 +138,10 @@ class PgClient {
       [userId]
     );
     const count = parseInt(result.rows[0].c);
-    const sortStatemant = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
+    const sortStatement = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
 
     const { rows } = await pool.query(
-      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY ${sortStatemant} ${
-        asc ? "ASC" : "DESC"
-      } ) 
+      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY ${sortStatement} ${asc == "ASC" ? "ASC" : "DESC"} ) 
         FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
        ${filters.length > 0 ? " AND " : ""} ${filters.join(
         " AND "
@@ -198,7 +196,6 @@ class PgClient {
           payload.title,
           payload.description,
           payload.value > 0 ? "revenue" : "expense",
-          // Math.abs(payload.value),
           payload.value,
           payload.categoryName,
           payload.spaceId,
@@ -215,6 +212,11 @@ class PgClient {
     } finally {
       client.release();
     }
+  }
+
+  // TO DO
+  async deleteTransacrion(transaction) {
+    await pool.query(`DELETE FROM public."transaction" WHERE id = $1`);
   }
 
   async getBarChartData(userId, spaceId) {

@@ -11,14 +11,6 @@
       @new-filters="onNewFilters"
     />
 
-    <!-- <ul class="nav justify-content-center">
-      <li class="nav-item">
-        <PaginationButtons
-          :totalPages="totalPages"
-          :pageSize="pageSize"
-          :selectedPage="selectedPage"
-          @page-clicked="onPageClicked"
-        /> -->
     <div class="table-responsive p-2">
       <table class="table">
         <thead class="sticky-top">
@@ -26,6 +18,12 @@
             <th scope="col">#</th>
             <th scope="col" @click="sortByColumn('title')" class="pointer">
               Title
+              <span v-if="asc == 'ASC' && currentSort == 'title'">
+                <i class="bi bi-caret-down-square text-success"></i>
+              </span>
+              <span v-else>
+                <i class="bi bi-caret-up-square text-success"></i>
+              </span>
             </th>
             <th
               scope="col"
@@ -33,12 +31,30 @@
               class="pointer"
             >
               Description
+              <span v-if="asc == 'ASC' && currentSort == 'description'">
+                <i class="bi bi-caret-down-square-fill text-success"></i>
+              </span>
+              <span v-else>
+                <i class="bi bi-caret-up-square-fill text-success"></i>
+              </span>
             </th>
             <th scope="col" @click="sortByColumn('value')" class="pointer">
               Amount
+              <span v-if="asc == 'ASC' && currentSort == 'value'">
+                <i class="bi bi-caret-down-square-fill text-success"></i>
+              </span>
+              <span v-else>
+                <i class="bi bi-caret-up-square-fill text-success"></i>
+              </span>
             </th>
             <th scope="col" @click="sortByColumn('name')" class="pointer">
               Space
+              <span v-if="asc == 'ASC' && currentSort == 'name'">
+                <i class="bi bi-caret-down-square-fill text-success"></i>
+              </span>
+              <span v-else>
+                <i class="bi bi-caret-up-square-fill text-success"></i>
+              </span>
             </th>
             <th
               scope="col"
@@ -46,6 +62,12 @@
               class="pointer"
             >
               Category
+              <span v-if="asc == 'ASC' && currentSort == 'categoryName'">
+                <i class="bi bi-caret-down-square-fill text-success"></i>
+              </span>
+              <span v-else>
+                <i class="bi bi-caret-up-square-fill text-success"></i>
+              </span>
             </th>
             <th
               scope="col"
@@ -53,6 +75,12 @@
               class="pointer"
             >
               Date
+              <span v-if="asc == 'ASC' && currentSort == 'transactionDate'">
+                <i class="bi bi-caret-down-square-fill text-success"></i>
+              </span>
+              <span v-else>
+                <i class="bi bi-caret-up-square-fill text-success"></i>
+              </span>
             </th>
             <th scope="col"></th>
           </tr>
@@ -71,7 +99,10 @@
               {{ new Date(t.transactionDate).toLocaleDateString() }}
             </td>
             <td>
-              <button class="btn btn-outline-danger" @click="deleteTransaction(t)">
+              <button
+                class="btn btn-outline-danger"
+                @click="deleteTransaction(t)"
+              >
                 <i class="bi bi-trash-fill"></i>
               </button>
             </td>
@@ -99,6 +130,7 @@ import {
   getSpaces,
   getCategories,
   getTransactions,
+  deleteTransaction
 } from "../api";
 
 import { mapGetters } from "vuex";
@@ -121,8 +153,8 @@ export default {
       totalPages: 0,
       pageSize: 10,
       chartSpace: 0,
-      currentSort: "",
-      isSortAsc: false,
+      currentSort: "transactionDate",
+      asc: "DESC",
       filters: {},
     };
   },
@@ -182,7 +214,7 @@ export default {
         page,
         this.filters,
         this.currentSort,
-        this.isSortAsc
+        this.asc
       );
     },
     async fetchTransactions(page, filters, sortColumn = null, asc = null) {
@@ -206,28 +238,30 @@ export default {
         this.selectedPage,
         filters,
         this.currentSort,
-        this.isSortAsc
+        this.asc
       );
     },
     async sortByColumn(column) {
       console.log(column);
       if (column == this.currentSort) {
-        this.isSortAsc = !this.isSortAsc;
+        this.asc = this.asc == "ASC" ? "DESC" : "ASC";
       } else {
-        this.isSortAsc = true;
+        this.asc = "ASC";
         this.currentSort = column;
       }
       console.log(this.currentSort);
-      console.log(this.isSortAsc);
+      console.log(this.asc);
       this.fetchTransactions(
         this.selectedPage,
         this.filters,
         this.currentSort,
-        this.isSortAsc
+        this.asc
       );
     },
+    // TO DO
     async deleteTransaction(transition) {
-      console.log("DELETE", transition);
+      // console.log("DELETE", transition);
+      await deleteTransaction(transition);
     },
   },
 };

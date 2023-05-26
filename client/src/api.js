@@ -48,7 +48,7 @@ const getCategories = async () => {
 };
 
 // non prende 0 come valore di amount e amount2
-const getTransactions = async (page = 0, pageSize = 10, filters = {}, sortColumn = null, asc = null) => {
+const getTransactions = async (page = 0, pageSize = 10, filters = {}, sortColumn, asc) => {
   const query = {
     page,
     pageSize
@@ -75,6 +75,10 @@ const createTransaction = async (payload) => {
   const { data } = await axios.post("/api/transactions", payload);
   return data;
 };
+// TO DO
+const deleteTransaction = async(transaction) => {
+  await axios.delete("/api/transactions/:id", transaction);
+}
 
 const createSpace = async (name) => {
   const { data } = await axios.post("/api/spaces", { name });
@@ -88,6 +92,7 @@ export {
   getTransactions,
   logout,
   createTransaction,
+  deleteTransaction,
   createSpace,
   getChartsData
 };
