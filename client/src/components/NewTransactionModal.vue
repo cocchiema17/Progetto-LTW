@@ -50,6 +50,7 @@
                 id="date"
                 v-model="date"
                 required
+                :max="new Date().toISOString().split('T')[0]"
               />
             </div>
 
@@ -176,8 +177,8 @@ export default {
             value: this.value,
           });
 
-          tx.spaceName = this.spaces[this.spaceIdx].name,
-          this.formValidated = false;
+          (tx.spaceName = this.spaces[this.spaceIdx].name),
+            (this.formValidated = false);
 
           this.$emit("new-tx", tx);
           closeBtn.click();
@@ -189,7 +190,7 @@ export default {
       } else {
         this.formValidated = true;
       }
-    }
+    },
   },
 };
 </script>

@@ -48,10 +48,10 @@
           :selectedPage="selectedPage"
           @page-clicked="onPageClicked"
         /> -->
-    <div class="table-scroll">
-      <table class="table table-hover align-middle table-bordered">
+    <div class="table-responsive p-2">
+      <table class="table">
         <thead class="sticky-top">
-          <tr class="table-light no-border-top">
+          <tr class="">
             <th scope="col">#</th>
             <th scope="col" @click="sortByColumn('title')" class="pointer">
               Title
@@ -69,7 +69,11 @@
             <th scope="col" @click="sortByColumn('name')" class="pointer">
               Space
             </th>
-            <th scope="col" @click="sortByColumn('categoryName')" class="pointer">
+            <th
+              scope="col"
+              @click="sortByColumn('categoryName')"
+              class="pointer"
+            >
               Category
             </th>
             <th scope="col" @click="sortByColumn('date')" class="pointer">
@@ -97,7 +101,10 @@
                 class="pointer"
                 @click.prevent="deleteTransaction(t)"
               /> -->
-              <i class="bi bi-trash-fill text-danger pointer"></i>
+
+              <button class="btn btn-outline-danger">
+                <i class="bi bi-trash-fill"></i>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -219,17 +226,14 @@ export default {
       console.log(column);
       if (column == this.currentSort) {
         this.isSortAsc = !this.isSortAsc;
-      }
-      else {
+      } else {
         this.isSortAsc = true;
         this.currentSort = column;
       }
       try {
-        const result = await getTransactions(this.pageSize,
-            this.selectedPage);
+        const result = await getTransactions(this.pageSize, this.selectedPage);
         console.log(result);
-      }
-      catch(err){
+      } catch (err) {
         console.log(err);
       }
     },
@@ -290,15 +294,18 @@ export default {
 </script>
 
 <style scoped>
+.home-container {
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
 .no-border-top {
   border-top: 0 !important;
 }
 
 .dropdown {
   text-align: center;
-}
-
-.pointer {
-  cursor: pointer;
 }
 </style>

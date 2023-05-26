@@ -1,8 +1,8 @@
 <template>
   <Pie
-  class="h-100"
     :options="{
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: false,
         title: false,

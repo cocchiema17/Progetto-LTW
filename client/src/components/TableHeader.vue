@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex justify-content-end align-items-center">
-    <div class="p-2 flex-grow-1">
+  <div class="d-flex justify-content-end align-items-center ps-3 pe-3">
+    <div class="flex-grow-1">
       <span v-if="totalTransactions != null" class="h4"
         >{{ totalTransactions }} Transactions</span
       >
@@ -87,6 +87,6 @@ export default {
       required: true,
     },
   },
-  components: { NewTransactionModal, NewSpaceModal, FilterModal },  //, SortModal
+  components: { NewTransactionModal, NewSpaceModal, FilterModal }, //, SortModal
 };
 </script>

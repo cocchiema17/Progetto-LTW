@@ -1,32 +1,61 @@
 <template>
-  <div class="charts-container">
-    <div class="row p-3 pb-0 charts-header">
-      <div class="col-8">
-        <select class="form-control form-control-sm" v-model="selectedSpace">
-          <option v-for="s in spaces" :key="s.id" :value="s.id">
-            {{ s.name }}
-          </option>
-        </select>
+  <div>
+    <div class="row g-3 mt-2 ps-4 pe-4 w-100">
+      <div class="col-12 col-md-6">
+        <div class="row">
+          <div class="col-2 d-flex justify-content-center">
+            <label class="col-form-label">Space</label>
+          </div>
+          <div class="col-10">
+            <select class="form-select" v-model="selectedSpace">
+              <option v-for="s in spaces" :key="s.id" :value="s.id">
+                {{ s.name }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
-
-      <div class="col-2">
-        <input class="form-control form-control-sm" type="date" />
+      <div class="col-12 col-md-3">
+        <div class="row">
+          <div class="col-2 d-flex justify-content-center">
+            <label class="col-form-label">Da</label>
+          </div>
+          <div class="col-10">
+            <input
+              class="form-control"
+              type="date"
+              :max="new Date().toISOString().split('T')[0]"
+            />
+          </div>
+        </div>
       </div>
-
-      <div class="col-2">
-        <input class="form-control form-control-sm" type="date" />
+      <div class="col-12 col-md-3">
+        <div class="row">
+          <div class="col-2 d-flex justify-content-center">
+            <label class="col-form-label">A</label>
+          </div>
+          <div class="col-10">
+            <input
+              class="form-control"
+              type="date"
+              :max="new Date().toISOString().split('T')[0]"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="row p-0 pl-3 pe-3 m-0 charts-wrapper">
-      <div class="col-5 p-3 m-0 h-100 d-flex justify-content-center">
-        <BarChart :data="barChartData" />
-      </div>
-      <div class="col-4 p-3 m-0 h-100 d-flex justify-content-center">
-        <LineChart :data="lineChartData" />
-      </div>
-      <div class="col-3 p-3 m-0 h-100 d-flex justify-content-center">
-        <PieChart :data="pieChartData" />
+    <div class="mw-100 pb-3" style="height: 30vh">
+      <div class="w-100 row p-3 h-100 flex-nowrap" style="overflow-x: auto">
+        <div class="col-lg-5">
+          <BarChart :data="barChartData" />
+        </div>
+        <div class="col-lg-5">
+          <LineChart :data="lineChartData" />
+        </div>
+        <div class="col-lg-2">
+          <PieChart :data="pieChartData" />
+        </div>
       </div>
     </div>
   </div>
@@ -84,17 +113,23 @@ export default {
   },
 };
 </script>
+<style scoped>
+::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
 
-<style>
-.charts-container {
-  height: 45vh;
+/* Track */
+::-webkit-scrollbar-track {
+  background: none;
+  margin: 0px 120px 0px 120px;
 }
-.charts-header {
-  height: 15%;
-}
-.charts-wrapper {
-  height: 85%;
-  overflow-x: auto;
-  white-space: nowrap;
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0e6dfd;
+  border-radius: 10px;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 30px;
 }
 </style>

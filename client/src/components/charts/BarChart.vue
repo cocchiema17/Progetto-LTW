@@ -1,5 +1,8 @@
 <template>
-  <Bar class="h-100 w-100" :options="{ responsive: false }" :data="chartData" />
+  <Bar
+    :options="{ responsive: true, maintainAspectRatio: false }"
+    :data="chartData"
+  />
 </template>
 
 <script>
@@ -55,17 +58,17 @@ export default {
           {
             data: [],
             label: "Expense",
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: "rgb(255, 99, 132)",
+            backgroundColor: "rgba(255, 99, 132, 0.5)",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,
           },
           {
             data: [],
-            label: "Revenute",
-            borderColor: 'rgb(54, 162, 235)',
-            backgroundColor: 'rgb(54, 162, 235, 0.5)',
+            label: "Revenue",
+            borderColor: "rgb(54, 162, 235)",
+            backgroundColor: "rgb(54, 162, 235, 0.5)",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,
