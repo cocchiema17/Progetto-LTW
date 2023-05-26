@@ -11,10 +11,18 @@
       @new-filters="onNewFilters"
     />
 
-    <div class="table-scroll">
-      <table class="table table-hover align-middle table-bordered">
+    <!-- <ul class="nav justify-content-center">
+      <li class="nav-item">
+        <PaginationButtons
+          :totalPages="totalPages"
+          :pageSize="pageSize"
+          :selectedPage="selectedPage"
+          @page-clicked="onPageClicked"
+        /> -->
+    <div class="table-responsive p-2">
+      <table class="table">
         <thead class="sticky-top">
-          <tr class="table-light no-border-top">
+          <tr class="">
             <th scope="col">#</th>
             <th scope="col" @click="sortByColumn('title')" class="pointer">
               Title
@@ -210,15 +218,18 @@ export default {
 </script>
 
 <style scoped>
+.home-container {
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
 .no-border-top {
   border-top: 0 !important;
 }
 
 .dropdown {
   text-align: center;
-}
-
-.pointer {
-  cursor: pointer;
 }
 </style>

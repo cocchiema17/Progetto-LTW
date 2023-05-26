@@ -1,5 +1,8 @@
 <template>
-  <Line class="h-100  w-100" :options="{ responsive: false }" :data="chartData" />
+  <Line
+    :options="{ responsive: true, maintainAspectRatio: false }"
+    :data="chartData"
+  />
 </template>
 
 <script>
