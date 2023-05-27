@@ -88,10 +88,15 @@ class PgClient {
       [userId]
     );
     const count = parseInt(result.rows[0].c);
-    const sortStatement = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
+    let sortStatement = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
+    console.log("SORT STATEMENT", sortStatement);
+    // console.log("CONFRONTO", sortStatement === "name" ? "s.'name'" : sortStatement);
+    console.log("CONFRONTO", sortStatement === "name");
 
     const { rows } = await pool.query(
-      `SELECT t.*, s."name" as "spaceName", s."userId", c.color as "categoryColor", ROW_NUMBER() OVER ( ORDER BY ${sortStatement} ${asc == "ASC" ? "ASC" : "DESC"} ) 
+      `SELECT t.*, s."name" as "spaceName", s."userId", c.color as "categoryColor", ROW_NUMBER() OVER ( ORDER BY ${
+        sortStatement == "name" ? "s.'name'" : sortStatement
+      } ${asc == "ASC" ? "ASC" : "DESC"} ) 
         FROM transaction t JOIN space s ON t."spaceId" = s.id JOIN category c ON c."spaceId" = t."spaceId" AND c."name" = t."categoryName"  WHERE "userId" = $1
        ${filters.length > 0 ? " AND " : ""} ${filters.join(
         " AND "
@@ -188,8 +193,7 @@ class PgClient {
         FROM transaction t
         WHERE ${filters.join(" AND ")}
         GROUP BY "type", year, month
-        ORDER BY year, month`
-    );
+        ORDER BY year, month`);
 
     return rows;
   }
@@ -260,13 +264,15 @@ class PgClient {
         JOIN subquery B 
         ON ((B.year < A.year OR (B.year = A.year and B.month <= A.month)) )
       GROUP by A.year, A.month
-      ORDER by A.year, A.month ASC`
-    );
+      ORDER by A.year, A.month ASC`);
     return rows;
   }
 
   async deleteTransaction(txId) {
-    const { rowCount } = await pool.query('DELETE FROM transaction WHERE id = $1', [txId]);
+    const { rowCount } = await pool.query(
+      "DELETE FROM transaction WHERE id = $1",
+      [txId]
+    );
     return rowCount;
   }
 }

@@ -109,7 +109,12 @@
               {{ new Date(t.transactionDate).toLocaleDateString() }}
             </td>
             <td class="d-flex">
-              <button class="btn btn-outline-success me-3" @click="updateTransaction(t)">
+              <button
+                class="btn btn-outline-success me-3"
+                data-bs-toggle="modal"
+                data-bs-target="#updateTransactionModal"
+                @click="fetchTransaction(t)"
+              >
                 <i class="bi bi-pencil-square"></i>
               </button>
               <button
@@ -130,6 +135,7 @@
       :selectedPage="selectedPage"
       @page-clicked="onPageClicked"
     />
+    <UpdateTransactionModal name="updateTransactionModal" @updateTx="updateTransaction" :txToUpdate="txToUpdate" />
   </div>
 </template>
 
@@ -139,7 +145,7 @@ import {
   getCategories,
   getTransactions,
   deleteTransaction,
-  updateTransaction
+  updateTransaction,
 } from "../api";
 
 import { mapGetters } from "vuex";
@@ -149,6 +155,7 @@ import PaginationButtons from "../components/PaginationButtons";
 import Charts from "../components/charts/Charts";
 import { TYPE } from "vue-toastification";
 import Color from "color";
+import UpdateTransactionModal from "../components/UpdateTransactionModal";
 
 export default {
   name: "HomePage",
@@ -166,6 +173,7 @@ export default {
       currentSort: "transactionDate",
       asc: "DESC",
       filters: {},
+      txToUpdate: {}
     };
   },
   components: {
@@ -173,6 +181,7 @@ export default {
     TableHeader,
     PaginationButtons,
     Charts,
+    UpdateTransactionModal
   },
   async created() {
     try {
@@ -268,9 +277,12 @@ export default {
       // fare chiamata get per aggiornare i grafici
     },
     async updateTransaction(transaction) {
-      console.log("UPDATE", transaction);
       await updateTransaction(transaction);
       // fare chiamata get per aggiornare i grafici
+    },
+    async fetchTransaction(transaction) {
+      this.txToUpdate = transaction
+      console.log("UPDATE", this.txToUpdate);
     },
     isColorLight(color) {
       console.log(color, Color(color).isLight(color));
