@@ -73,9 +73,15 @@ const createTransaction = async (payload) => {
   const { data } = await axios.post("/api/transactions", payload);
   return data;
 };
-// TO DO
+
 const deleteTransaction = async(id) => {
-  await axios.delete(`/api/transactions/:${id}`, id);
+  await axios.delete(`/api/transactions/${id}`, id);
+}
+
+// TO DO
+const updateTransaction = async(payload) => {
+  const { data } = await axios.put(`/api/transactions/${payload.id}`, payload)
+  return data;
 }
 
 const createSpace = async (name) => {
@@ -92,6 +98,7 @@ export {
   logout,
   createTransaction,
   deleteTransaction,
+  updateTransaction,
   createSpace,
   getChartsData
 };

@@ -315,7 +315,6 @@ class PgClient {
     return rows;
   }
 
-  // TO DO
   async deleteTransaction(txId) {
     const { rowCount } = await pool.query('DELETE FROM transaction WHERE id = $1', [txId]);
     return rowCount;

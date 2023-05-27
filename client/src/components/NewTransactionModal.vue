@@ -81,16 +81,14 @@
                 </datalist>
               </div>
 
-              <div
-                class="col-6"
-                v-if="!(this.categoryName in categories) && this.categoryName != ''"
-              >
+              <div class="col-6 pe-3 m-0" v-if="!this.isInCategories">
                 <label class="form-label" for="color"> Color </label>
                 <input
                   class="form-control"
                   type="color"
                   v-model="color"
                   id="color"
+                  style="width: 150px; height: 38px"
                 />
               </div>
               <div class="col-6 p-0 m-0">
@@ -120,6 +118,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
             ref="closeBtn"
+            @click.prevent="resetData"
           >
             Close
           </button>
@@ -157,6 +156,7 @@ export default {
       color: "",
       value: null,
       formValidated: false,
+      isInCategories: false,
     };
   },
   methods: {
@@ -181,7 +181,8 @@ export default {
 
           this.$emit("new-tx", tx);
           closeBtn.click();
-          this.newToast("Transaction added");
+          this.newToast("Transaction added", TYPE.SUCCESS);
+          this.resetData();
         } catch (err) {
           console.log(err);
           this.newToast("Transaction creation failed", TYPE.ERROR);
@@ -189,6 +190,22 @@ export default {
       } else {
         this.formValidated = true;
       }
+    },
+    onChangeCategory() {
+      for (let i = 0; i < this.categories.length; i++) {
+        if (this.categoryName === this.categories[i].name) {
+          this.isInCategories = true;
+          return;
+        }
+      }
+      this.isInCategories = false;
+    },
+    resetData() {
+      this.title = "";
+      this.description = "";
+      this.date = "";
+      this.categoryName = "";
+      this.color = "";
     },
   },
 };
