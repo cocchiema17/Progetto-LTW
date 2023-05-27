@@ -185,8 +185,8 @@ class PgClient {
       await client.query("BEGIN");
 
       await client.query(
-        `INSERT INTO category (name, "spaceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-        [payload.categoryName, payload.spaceId]
+        `INSERT INTO category (name, "spaceId", "color") VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+        [payload.categoryName, payload.spaceId, payload.color]
       );
 
       const { rows } = await client.query(

@@ -58,7 +58,6 @@ const getTransactions = async (page = 0, pageSize = 10, filters = {}, sortColumn
       query[e[0]] = e[1];
     }
   });
-  // console.log("API FILTERS", filters);
   if (sortColumn && asc) {
     query.sortColumn = sortColumn;
     query.asc = asc;

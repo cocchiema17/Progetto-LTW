@@ -18,7 +18,7 @@
             <th scope="col">#</th>
             <th scope="col" @click="sortByColumn('title')" class="pointer">
               Title
-              <span v-if="asc == 'ASC' && currentSort == 'description'">
+              <span v-if="asc == 'ASC' && currentSort == 'title'">
                 <i class="bi bi-sort-down text-success"></i>
               </span>
               <span v-else>
