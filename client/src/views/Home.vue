@@ -100,6 +100,13 @@
             </td>
             <td>
               <button
+                class="btn btn-outline-success"
+              >
+              <i class="bi bi-pencil-square"></i>
+              </button>
+            </td>
+            <td>
+              <button
                 class="btn btn-outline-danger"
                 @click="deleteTransaction(t)"
               >
@@ -252,7 +259,7 @@ export default {
     // TO DO
     async deleteTransaction(transition) {
       // console.log("DELETE", transition.id);
-      await deleteTransaction(transition);
+      await deleteTransaction(transition.id);
     },
   },
 };
