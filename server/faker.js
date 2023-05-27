@@ -17,17 +17,18 @@ const pool = new Pool({
 const categories = ["Food", "Clothes", "Travel", "Fun"];
 
 
-for (let i = 0; i < 30; i++) {
-  let x = i % 2 == 0;
+for (let i = 0; i < 100; i++) {
+  const n = faker.commerce.price(0.01, 100000.00);
+  const y = i % 2 == 0;
   pool.query(`INSERT INTO public.transaction(
     title, description, type, value, "categoryName", "spaceId", "transactionDate")
     VALUES ($1, $2, $3, $4, $5, $6, $7)`, [
-    x ? "Buy" : "Sell " + faker.commerce.product(),
+    faker.lorem.words(3),
     faker.commerce.productDescription(),
-    x ? "expense" : "revenue",
-    faker.commerce.price(),
+    y ? "expense" : "revenue",
+    y ? parseFloat('-' + n) : parseFloat(n),
     faker.helpers.arrayElement(categories),
     1,
-    faker.date.past(1)
+    faker.date.past(9)
   ]);
 }

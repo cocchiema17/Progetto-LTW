@@ -86,7 +86,7 @@ export default {
   data() {
     return {
       selectedSpace: null,
-      fromDate: null,
+      fromDate: this.todayPlusMonths(-6),
       toDate: null,
       barChartData: [],
       lineChartData: [],
@@ -128,6 +128,12 @@ export default {
     },
     refresh() {
       this.loadsCharts(this.selectedSpace, this.fromDate, this.toDate);
+    },
+    todayPlusMonths(months) {
+      const d = new Date();
+      return new Date(d.getFullYear(), d.getMonth() + months, d.getDate())
+        .toISOString()
+        .split("T")[0];
     },
   },
 };

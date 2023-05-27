@@ -12,14 +12,13 @@
             :totalPages="totalPages"
             @new-tx="onNewTx"
             @new-filters="onNewFilters"
+            @download-report="onDownloadReport"
           />
         </div>
       </div>
       <div class="row mt-3">
         <div class="col">
-          <div
-            class="table-responsive"
-          >
+          <div class="table-responsive">
             <table class="table table-hover align-middle">
               <div
                 class="spinner-border text-primary"
@@ -36,7 +35,7 @@
                   >
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Title</span>
-                      <span v-if="asc == 'ASC' && currentSort == 'title'">
+                      <span v-if="asc && currentSort == 'title'">
                         <i class="bi bi-sort-down text-success"></i>
                       </span>
                       <span v-else>
@@ -51,7 +50,7 @@
                   >
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Description</span>
-                      <span v-if="asc == 'ASC' && currentSort == 'description'">
+                      <span v-if="asc && currentSort == 'description'">
                         <i class="bi bi-sort-down text-success"></i>
                       </span>
                       <span v-else>
@@ -61,23 +60,12 @@
                   </th>
                   <th
                     scope="col"
-                    @click="sortByColumn('value')"
+                    @click="sortByColumn('amount')"
                     class="pointer"
                   >
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Amount</span>
-                      <span v-if="asc == 'ASC' && currentSort == 'value'">
-                        <i class="bi bi-sort-down text-success"></i>
-                      </span>
-                      <span v-else>
-                        <i class="bi bi-sort-up text-success"></i>
-                      </span>
-                    </div>
-                  </th>
-                  <th scope="col" @click="sortByColumn('name')" class="pointer">
-                    <div class="d-flex flex-nowrap">
-                      <span class="me-2">Space</span>
-                      <span v-if="asc == 'ASC' && currentSort == 'name'">
+                      <span v-if="asc && currentSort == 'amount'">
                         <i class="bi bi-sort-down text-success"></i>
                       </span>
                       <span v-else>
@@ -87,14 +75,27 @@
                   </th>
                   <th
                     scope="col"
-                    @click="sortByColumn('categoryName')"
+                    @click="sortByColumn('space')"
+                    class="pointer"
+                  >
+                    <div class="d-flex flex-nowrap">
+                      <span class="me-2">Space</span>
+                      <span v-if="asc && currentSort == 'space'">
+                        <i class="bi bi-sort-down text-success"></i>
+                      </span>
+                      <span v-else>
+                        <i class="bi bi-sort-up text-success"></i>
+                      </span>
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    @click="sortByColumn('category')"
                     class="pointer"
                   >
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Category</span>
-                      <span
-                        v-if="asc == 'ASC' && currentSort == 'categoryName'"
-                      >
+                      <span v-if="asc && currentSort == 'category'">
                         <i class="bi bi-sort-down text-success"></i>
                       </span>
                       <span v-else>
@@ -109,9 +110,7 @@
                   >
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Date</span>
-                      <span
-                        v-if="asc == 'ASC' && currentSort == 'transactionDate'"
-                      >
+                      <span v-if="asc && currentSort == 'transactionDate'">
                         <i class="bi bi-sort-down text-success"></i>
                       </span>
                       <span v-else>
@@ -202,7 +201,8 @@ import PaginationButtons from "../components/PaginationButtons";
 import Charts from "../components/charts/Charts";
 import { TYPE } from "vue-toastification";
 import Color from "color";
-import UpdateTransactionModal from "../components/UpdateTransactionModal";
+//import UpdateTransactionModal from "../components/UpdateTransactionModal";
+import { utils, write } from "xlsx";
 
 export default {
   name: "HomePage",
@@ -215,13 +215,13 @@ export default {
       totalTransactions: 0,
       selectedPage: 0,
       totalPages: 0,
-      pageSize: 10,
+      pageSize: 15,
       chartSpace: 0,
       currentSort: "transactionDate",
-      asc: "DESC",
+      asc: false,
       filters: {},
       isLoading: false,
-      txToUpdate: {}
+      txToUpdate: {},
     };
   },
   components: {
@@ -229,7 +229,7 @@ export default {
     TableHeader,
     PaginationButtons,
     Charts,
-    UpdateTransactionModal
+    //UpdateTransactionModal
   },
   async created() {
     try {
@@ -238,7 +238,7 @@ export default {
       const results = await Promise.all([
         getSpaces(),
         getCategories(),
-        getTransactions(0, this.pageSize),
+        getTransactions(0, this.pageSize, {}, this.currentSort, this.asc),
       ]);
 
       this.$store.dispatch("spaces", results[0]);
@@ -308,16 +308,14 @@ export default {
         this.asc
       );
     },
-    async sortByColumn(column) {
-      console.log(column);
+    sortByColumn(column) {
       if (column == this.currentSort) {
-        this.asc = this.asc == "ASC" ? "DESC" : "ASC";
+        this.asc = !this.asc;
       } else {
-        this.asc = "ASC";
+        this.asc = true;
         this.currentSort = column;
       }
-      console.log(this.currentSort);
-      console.log(this.asc);
+
       this.fetchTransactions(
         this.selectedPage,
         this.filters,
@@ -352,11 +350,55 @@ export default {
       }
     },
     async fetchTransaction(transaction) {
-      this.txToUpdate = transaction
+      this.txToUpdate = transaction;
       console.log("UPDATE", this.txToUpdate);
     },
     isColorLight(color) {
       return Color(color).isLight(color);
+    },
+    onDownloadReport() {
+      const workbook = utils.book_new();
+
+      const data = [];
+
+      this.transactions.forEach((t) => {
+        const obj = {};
+        obj.title = t.title;
+        obj.description = t.description;
+        obj.amount = t.value;
+        obj.category = t.categoryName;
+        obj.space = t.spaceName;
+        obj.date = new Date(t.transactionDate).toISOString().split("T")[0];
+
+        data.push(obj);
+      });
+
+      const worksheet = utils.json_to_sheet(data);
+
+      utils.book_append_sheet(workbook, worksheet, "Report");
+
+      const excelBuffer = write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `report_${this.pageSize * this.selectedPage}-${
+        this.pageSize * this.selectedPage + this.pageSize
+      }.xlsx`;
+
+      document.body.appendChild(a);
+
+      a.click();
+
+      document.body.removeChild(a);
     },
   },
 };

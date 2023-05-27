@@ -1,5 +1,7 @@
 <template>
-  <div class="d-flex flex-wrap align-items-end pt-3 ps-3 pe-3 justify-content-between align-content-center">
+  <div
+    class="d-flex flex-wrap align-items-end pt-3 ps-3 pe-3 justify-content-between align-content-center"
+  >
     <div class="flex-grow-1">
       <h4>{{ totalTransactions }} Transactions</h4>
     </div>
@@ -24,7 +26,11 @@
             Filter
             <span class="badge text-bg-success">{{ filtersNumber }}</span>
           </button>
-          <button type="button" class="btn btn-outline-success">
+          <button
+            type="button"
+            class="btn btn-outline-success"
+            @click="onDownload"
+          >
             Download
           </button>
         </div>
@@ -79,6 +85,9 @@ export default {
         (f) => f && f != ""
       ).length;
       this.$emit("new-filters", filters);
+    },
+    onDownload() {
+      this.$emit("download-report");
     },
   },
 };

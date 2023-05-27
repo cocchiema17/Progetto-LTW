@@ -5,7 +5,6 @@ import Intro from "./views/Intro";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
-import About from "./views/About";
 import NotFound from "./views/NotFound";
 
 import { getCurrentUser } from "./api";
@@ -40,11 +39,6 @@ const routes = [
     meta: {
       requiresGuest: true
     },
-  },
-  {
-    path: "/about",
-    name: "About",
-    component: About
   },
   {
     path: '/:pathMatch(.*)*',

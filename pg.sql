@@ -48,15 +48,7 @@ create table "transaction" (
   primary key ("id")
 );
 
-create table "attachment" (
-  "id" bigserial,
-  "rawContent" bytea not null,
-  "transactionId" uuid not null,
-  primary key("id")
-);
-
 alter table "passwordReset" add foreign key ("userId") REFERENCES "user" ("id");
 alter table "space" add foreign key ("userId") REFERENCES "user" ("id");
 alter table "category" add foreign key ("spaceId") REFERENCES "space" ("id");
 alter table "transaction" add foreign key ("categoryName", "spaceId") REFERENCES "category" ("name", "spaceId");
-alter table "attachment" add foreign key ("transactionId") REFERENCES "transaction" ("id");

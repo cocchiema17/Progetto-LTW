@@ -28,7 +28,7 @@ class PgClient {
     return rows[0];
   }
 
-  async getUserTransactions(userId, filters_param, sort_param) {
+  async getUserTransactions(userId, filtersParam, sortParam) {
     const {
       page,
       pageSize,
@@ -38,9 +38,11 @@ class PgClient {
       amount,
       operator,
       amount2,
-    } = filters_param;
-    const { sortColumn, asc } = sort_param;
+    } = filtersParam;
+
     const filters = [];
+
+    filters.push('"userId" = $1');
 
     if (categoryName) {
       filters.push(`t."categoryName" = '${categoryName}'`);
@@ -88,17 +90,38 @@ class PgClient {
       [userId]
     );
     const count = parseInt(result.rows[0].c);
-    let sortStatement = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
-    console.log("SORT STATEMENT", sortStatement);
-    // console.log("CONFRONTO", sortStatement === "name" ? "s.'name'" : sortStatement);
-    console.log("CONFRONTO", sortStatement === "name");
+
+    let sortColumn;
+
+    switch (sortParam.sortColumn) {
+      case 'title':
+        sortColumn = 't.title';
+        break;
+      case 'description':
+        sortColumn = 't.description';
+        break;
+      case 'amount':
+        sortColumn = 't.value';
+        break;
+      case 'space':
+        sortColumn = 's.name';
+        break;
+      case 'category':
+        sortColumn = 'c.name';
+        break;
+      case 'date':
+        sortColumn = 't."transactionDate"';
+        break;
+      default:
+        sortColumn = 't."transactionDate"';
+    }
+
+    let sortOrder = sortParam.asc == true ? 'ASC' : 'DESC';
 
     const { rows } = await pool.query(
-      `SELECT t.*, s."name" as "spaceName", s."userId", c.color as "categoryColor", ROW_NUMBER() OVER ( ORDER BY ${
-        sortStatement == "name" ? "s.'name'" : sortStatement
-      } ${asc == "ASC" ? "ASC" : "DESC"} ) 
-        FROM transaction t JOIN space s ON t."spaceId" = s.id JOIN category c ON c."spaceId" = t."spaceId" AND c."name" = t."categoryName"  WHERE "userId" = $1
-       ${filters.length > 0 ? " AND " : ""} ${filters.join(" AND ")} LIMIT $2 OFFSET $3`,
+      `SELECT t.*, s."name" as "spaceName", s."userId", c.color as "categoryColor", ROW_NUMBER() OVER ( ORDER BY ${sortColumn} ${sortOrder} ) 
+        FROM transaction t JOIN space s ON t."spaceId" = s.id JOIN category c ON c."spaceId" = t."spaceId" AND c."name" = t."categoryName"  WHERE
+       ${filters.join(" AND ")} LIMIT $2 OFFSET $3`,
       [userId, pageSize, pageSize * page]
     );
 

@@ -54,13 +54,8 @@
               />
             </div>
 
-            <!-- <div class="mb-3">
-              <label for="date" class="form-label">Attachment</label>
-              <input class="form-control" type="file" />
-            </div> -->
-
-            <div class="input-group mb-3">
-              <div class="col-6 pe-3 m-0">
+            <div class="row g-3">
+              <div class="col">
                 <label for="category" class="form-label">Category</label>
                 <input
                   class="form-control"
@@ -71,27 +66,26 @@
                   required
                 />
                 <datalist id="categoriesSuggest">
-                  <option
-                    v-for="c in selectedCategories"
-                    :key="c.id"
-                    :style="{ color: c.color }"
-                  >
+                  <option v-for="c in categories" :key="c.id">
                     {{ c.name }}
                   </option>
                 </datalist>
               </div>
-
-              <div class="col-6 pe-3 m-0" v-if="!this.isInCategories">
+              <div class="col">
                 <label class="form-label" for="color"> Color </label>
                 <input
                   class="form-control"
+                  style="height: 38px;"
                   type="color"
                   v-model="color"
                   id="color"
-                  style="width: 150px; height: 38px"
+                  :disabled="!this.colorPickerEnabled"
                 />
               </div>
-              <div class="col-6 p-0 m-0">
+            </div>
+
+            <div class="row g-3 mt-1 mb-2">
+              <div class="col">
                 <label for="space" class="form-label">Space</label>
                 <select
                   class="form-control"
@@ -104,14 +98,14 @@
                   </option>
                 </select>
               </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="amount" class="form-label">Amount</label>
-              <MoneyInput v-model="value" required />
+              <div class="col">
+                <label for="amount" class="form-label">Amount</label>
+                <MoneyInput v-model="value" required />
+              </div>
             </div>
           </form>
         </div>
+
         <div class="modal-footer">
           <button
             type="button"
@@ -122,7 +116,6 @@
           >
             Close
           </button>
-
           <button @click.prevent="onSave" type="button" class="btn btn-success">
             Save
           </button>
@@ -137,6 +130,7 @@ import { mapGetters } from "vuex";
 import { createTransaction } from "../api";
 import MoneyInput from "./MoneyInput";
 import { TYPE } from "vue-toastification";
+import randomColor from "randomcolor";
 
 export default {
   name: "NewTransactionModalComp",
@@ -150,13 +144,12 @@ export default {
       title: "",
       description: "",
       date: "",
-      file: null,
       categoryName: "",
       spaceIdx: 0,
-      color: "",
+      color: randomColor({ format: "hex" }),
       value: null,
       formValidated: false,
-      isInCategories: false,
+      colorPickerEnabled: true,
     };
   },
   methods: {
@@ -192,13 +185,16 @@ export default {
       }
     },
     onChangeCategory() {
-      for (let i = 0; i < this.categories.length; i++) {
-        if (this.categoryName === this.categories[i].name) {
-          this.isInCategories = true;
-          return;
-        }
+      const selectedCategory = this.categories.find(
+        (c) => c.name == this.categoryName
+      );
+      if (selectedCategory) {
+        this.color = selectedCategory.color;
+        this.colorPickerEnabled = false;
+      } else {
+        this.color = randomColor({ format: "hex" });
+        this.colorPickerEnabled = true;
       }
-      this.isInCategories = false;
     },
     resetData() {
       this.title = "";

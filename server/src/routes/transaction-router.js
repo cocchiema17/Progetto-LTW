@@ -31,8 +31,11 @@ router.get(
     query("operator").optional(),
     query("amount2").optional(),
     query("search").optional(),
-    query("sortColumn").optional(),
-    query("asc").optional(),
+    query("sortColumn")
+      .optional()
+      .isIn(["title", "description", "amount", "space", "category", "transactionDate"]),
+    query("asc")
+      .optional().isBoolean().toBoolean(),
   ],
   validationHandler,
   async (req, res) => {

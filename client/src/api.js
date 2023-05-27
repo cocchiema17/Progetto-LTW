@@ -59,8 +59,13 @@ const getTransactions = async (page = 0, pageSize = 10, filters = {}, sortColumn
       query[e[0]] = e[1];
     }
   });
-  if (sortColumn && asc) {
+
+  if (sortColumn) {
     query.sortColumn = sortColumn;
+  }
+
+
+  if (typeof asc == 'boolean') {
     query.asc = asc;
   }
 
@@ -75,12 +80,12 @@ const createTransaction = async (payload) => {
   return data;
 };
 
-const deleteTransaction = async(id) => {
+const deleteTransaction = async (id) => {
   await axios.delete(`/api/transactions/${id}`, id);
 }
 
 // TO DO
-const updateTransaction = async(payload) => {
+const updateTransaction = async (payload) => {
   const { data } = await axios.put(`/api/transactions/${payload.id}`, payload)
   return data;
 }

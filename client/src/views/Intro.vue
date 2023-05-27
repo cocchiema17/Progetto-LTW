@@ -1,19 +1,6 @@
 <template>
   <main>
-    <nav id="navbar" class="navbar body-tertiary border-bottom">
-      <div class="container-fluid">
-        <span class="navbar-brand mb-0 h3">Finager</span>
-
-        <ul class="nav nav-pills nav-fill">
-          <li class="nav-item" v-if="!user">
-            <router-link to="/login" class="nav-link">Sign in</router-link>
-          </li>
-          <li class="nav-item" v-if="!user">
-            <router-link to="/register" class="nav-link">Sign up</router-link>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    <Navbar />
 
     <div id="chiSiamo" class="bg-success">
       <img src="@/assets/finager-titolo.png" id="titolo" />
@@ -139,10 +126,11 @@
 <script>
 import { mapGetters } from "vuex";
 
+import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 export default {
   name: "IntroPage",
-  components: { Footer },
+  components: { Navbar, Footer },
   computed: {
     ...mapGetters(["user"]),
   },
