@@ -83,7 +83,7 @@
 
               <div
                 class="col-6"
-                :v-if="!this.selectedCategory && this.selectedCategory != ''"
+                v-if="!(this.categoryName in categories) && this.categoryName != ''"
               >
                 <label class="form-label" for="color"> Color </label>
                 <input
@@ -171,6 +171,7 @@ export default {
             description: this.description,
             date: this.date,
             categoryName: this.categoryName,
+            color: this.color,
             spaceId: this.spaces[this.spaceIdx].id,
             value: this.value,
           });

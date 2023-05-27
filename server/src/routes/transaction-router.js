@@ -79,18 +79,20 @@ router.post(
     body("description").trim().notEmpty(),
     body("date").trim().notEmpty().isDate({ format: "YYYY-MM-DD" }),
     body("categoryName").trim().notEmpty(),
+    body("color").trim().notEmpty(),
     body("spaceId").trim().notEmpty(),
     body("value").trim().notEmpty().isFloat().not().equals(0),
   ],
   validationHandler,
   async (req, res) => {
-    const { title, description, date, categoryName, spaceId, value } = req.body;
+    const { title, description, date, categoryName, color, spaceId, value } = req.body;
 
     const tx = await pgClient.createTransaction({
       title,
       description,
       date,
       categoryName,
+      color,
       spaceId: parseInt(spaceId),
       value,
     });
