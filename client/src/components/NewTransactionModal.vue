@@ -80,7 +80,7 @@
                   </option>
                 </datalist>
               </div>
-              <div class="col-4 ps-3 m-0 d-none" id="color-conteiner">
+              <div class="col-4 ps-3 m-0" id="color-conteiner" v-show="!this.selectedCategory && this.selectedCategory != ''">
                 <label class="form-check-label" for="color"> Color </label>
                 <input
                   class="form-control"
@@ -159,6 +159,7 @@ export default {
       color: "",
       value: null,
       formValidated: false,
+      selectedCategory: ""
     };
   },
   methods: {
@@ -191,19 +192,10 @@ export default {
         this.formValidated = true;
       }
     },
-    // da modificare con le direttive Vue
     onChangeCategory() {
-      const category = this.$refs.txForm.category.value;
-      const color = document.getElementById("color-conteiner");
-      console.log(category);
-      for(let i = 0; i < this.categories.length; i++) {
-        console.log(this.categories[i].name);
-        if (category == this.categories[i].name){
-          color.classList.add("d-none");
-          break;
-        } 
-        else color.classList.remove("d-none");
-      }
+      this.selectedCategory = this.selectedCategories.find(
+        (c) => c.name === this.categoryName
+      );
     },
   },
 };

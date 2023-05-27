@@ -163,12 +163,12 @@ export default (await import("vue")).defineComponent({
         parseInt(form.amount.value) >= parseInt(form.amount2.value) &&
         form.operator.value === "BT"
       ) {
-        console.log("ELSE IF", form.amount.value, form.amount2.value);
+        // console.log("ELSE IF", form.amount.value, form.amount2.value);
         this.isErrorBT = true;
       } else {
         this.isError = false;
         this.isErrorBT = false;
-        console.log("AMOUNT", this.amount);
+        // console.log("AMOUNT", this.amount);
         this.$emit("new-filters", {
           search: this.search || null,
           space: this.space || null,
@@ -225,8 +225,4 @@ export default (await import("vue")).defineComponent({
 </script>
 
 <style scoped>
-/* .errMessage {
-  color: red;
-  font-size: small;
-} */
 </style>

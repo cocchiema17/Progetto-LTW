@@ -215,8 +215,8 @@ class PgClient {
   }
 
   // TO DO
-  async deleteTransacrion(transaction) {
-    await pool.query(`DELETE FROM public."transaction" WHERE id = $1`);
+  async deleteTransacrion(id) {
+    await pool.query(`DELETE FROM "transaction" WHERE id = $1`, [id]);
   }
 
   async getBarChartData(userId, spaceId) {

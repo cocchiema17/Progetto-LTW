@@ -251,7 +251,7 @@ export default {
     },
     // TO DO
     async deleteTransaction(transition) {
-      // console.log("DELETE", transition);
+      // console.log("DELETE", transition.id);
       await deleteTransaction(transition);
     },
   },

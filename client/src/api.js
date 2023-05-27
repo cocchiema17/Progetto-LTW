@@ -75,8 +75,8 @@ const createTransaction = async (payload) => {
   return data;
 };
 // TO DO
-const deleteTransaction = async(transaction) => {
-  await axios.delete("/api/transactions/:id", transaction);
+const deleteTransaction = async(id) => {
+  await axios.delete(`/api/transactions/:${id}`, id);
 }
 
 const createSpace = async (name) => {
