@@ -12,7 +12,7 @@
     />
 
     <div class="table-responsive p-2">
-      <table class="table">
+      <table class="table table-hover">
         <thead class="sticky-top">
           <tr class="">
             <th scope="col">#</th>
@@ -94,7 +94,17 @@
               {{ (t.type == "expense" ? "" : "+") + t.value + " € " }}
             </td>
             <td>{{ t.spaceName }}</td>
-            <td>{{ t.categoryName }}</td>
+            <td>
+              <span
+                class="badge"
+                :style="{
+                  background: t.categoryColor + ' !important',
+                  color: isColorLight(t.categoryColor) ? 'black' : 'white',
+                  fontSize: '15px',
+                }"
+                >{{ t.categoryName }}</span
+              >
+            </td>
             <td>
               {{ new Date(t.transactionDate).toLocaleDateString() }}
             </td>
@@ -113,17 +123,13 @@
         </tbody>
       </table>
     </div>
-
-    <ul class="nav justify-content-center">
-      <li class="nav-item">
-        <PaginationButtons
-          :totalPages="totalPages"
-          :pageSize="pageSize"
-          :selectedPage="selectedPage"
-          @page-clicked="onPageClicked"
-        />
-      </li>
-    </ul>
+    <PaginationButtons
+      v-if="totalPages != 0"
+      :totalPages="totalPages"
+      :pageSize="pageSize"
+      :selectedPage="selectedPage"
+      @page-clicked="onPageClicked"
+    />
   </div>
 </template>
 
@@ -142,6 +148,7 @@ import TableHeader from "../components/TableHeader";
 import PaginationButtons from "../components/PaginationButtons";
 import Charts from "../components/charts/Charts";
 import { TYPE } from "vue-toastification";
+import Color from "color";
 
 export default {
   name: "HomePage",
@@ -264,7 +271,11 @@ export default {
       console.log("UPDATE", transaction);
       await updateTransaction(transaction);
       // fare chiamata get per aggiornare i grafici
-    }
+    },
+    isColorLight(color) {
+      console.log(color, Color(color).isLight(color));
+      return Color(color).isLight(color);
+    },
   },
 };
 </script>
@@ -291,5 +302,24 @@ export default {
 
 .pointer:hover {
   text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: none;
+  margin: 0px 120px 0px 120px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0e6dfd;
+  border-radius: 10px;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 30px;
 }
 </style>

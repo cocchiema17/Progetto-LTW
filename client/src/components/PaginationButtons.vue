@@ -1,6 +1,6 @@
 <template>
-  <nav aria-label="Page navigation example" id="pagination">
-    <ul class="pagination">
+  <nav id="pagination" class="mt-3">
+    <ul class="pagination justify-content-center">
       <li class="page-item">
         <a :class="{ 'page-link': true, 'disabled': selectedPage == 0 }" href="#pagination" aria-label="Previous" @click="$emit('page-clicked', selectedPage-1)">
           <span aria-hidden="true">&laquo;</span>
