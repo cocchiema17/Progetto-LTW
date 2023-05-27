@@ -202,6 +202,7 @@ import PaginationButtons from "../components/PaginationButtons";
 import Charts from "../components/charts/Charts";
 import { TYPE } from "vue-toastification";
 import Color from "color";
+import UpdateTransactionModal from "../components/UpdateTransactionModal";
 
 export default {
   name: "HomePage",
@@ -220,6 +221,7 @@ export default {
       asc: "DESC",
       filters: {},
       isLoading: false,
+      txToUpdate: {}
     };
   },
   components: {
@@ -227,6 +229,7 @@ export default {
     TableHeader,
     PaginationButtons,
     Charts,
+    UpdateTransactionModal
   },
   async created() {
     try {
@@ -347,6 +350,10 @@ export default {
       } catch (err) {
         this.newToast("Transaction update failed", TYPE.ERROR);
       }
+    },
+    async fetchTransaction(transaction) {
+      this.txToUpdate = transaction
+      console.log("UPDATE", this.txToUpdate);
     },
     isColorLight(color) {
       return Color(color).isLight(color);
