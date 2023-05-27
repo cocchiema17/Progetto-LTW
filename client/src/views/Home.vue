@@ -110,17 +110,12 @@
         </tbody>
       </table>
     </div>
-
-    <ul class="nav justify-content-center">
-      <li class="nav-item">
-        <PaginationButtons
-          :totalPages="totalPages"
-          :pageSize="pageSize"
-          :selectedPage="selectedPage"
-          @page-clicked="onPageClicked"
-        />
-      </li>
-    </ul>
+    <PaginationButtons
+      :totalPages="totalPages"
+      :pageSize="pageSize"
+      :selectedPage="selectedPage"
+      @page-clicked="onPageClicked"
+    />
   </div>
 </template>
 
@@ -275,5 +270,24 @@ export default {
 
 .pointer:hover {
   text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: none;
+  margin: 0px 120px 0px 120px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0e6dfd;
+  border-radius: 10px;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 30px;
 }
 </style>
