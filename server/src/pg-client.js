@@ -93,9 +93,7 @@ class PgClient {
     const { rows } = await pool.query(
       `SELECT t.*, s."name" as "spaceName", s."userId", c.color as "categoryColor", ROW_NUMBER() OVER ( ORDER BY ${sortStatement} ${asc == "ASC" ? "ASC" : "DESC"} ) 
         FROM transaction t JOIN space s ON t."spaceId" = s.id JOIN category c ON c."spaceId" = t."spaceId" AND c."name" = t."categoryName"  WHERE "userId" = $1
-       ${filters.length > 0 ? " AND " : ""} ${filters.join(
-        " AND "
-      )} LIMIT $2 OFFSET $3`,
+       ${filters.length > 0 ? " AND " : ""} ${filters.join(" AND ")} LIMIT $2 OFFSET $3`,
       [userId, pageSize, pageSize * page]
     );
 

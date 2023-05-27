@@ -16,6 +16,7 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
+import { getMonthName } from "../../utils";
 
 ChartJS.register(
   Title,
@@ -33,7 +34,6 @@ export default {
   computed: {
     chartData() {
       const grouped = {};
-      //const labels = [];
 
       this.data.forEach((d) => {
         const month = d.month;
@@ -58,8 +58,8 @@ export default {
           {
             data: [],
             label: "Expense",
-            borderColor: "rgb(255, 99, 132)",
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
+            borderColor: "#f4442e",
+            backgroundColor: "#f4442e",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,
@@ -67,8 +67,8 @@ export default {
           {
             data: [],
             label: "Revenue",
-            borderColor: "rgb(54, 162, 235)",
-            backgroundColor: "rgb(54, 162, 235, 0.5)",
+            borderColor: "#86bbd8",
+            backgroundColor: "#86bbd8",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,
@@ -77,7 +77,9 @@ export default {
       };
 
       Object.entries(grouped).forEach((v) => {
-        chartData.labels.push(v[0]);
+        const [month, year] = v[0].split("-");
+        chartData.labels.push(`${getMonthName(parseInt(month))}, ${year}`);
+
         chartData.datasets[0].data.push(v[1]["expense"]);
         chartData.datasets[1].data.push(v[1]["revenue"]);
       });

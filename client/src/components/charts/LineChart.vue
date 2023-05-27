@@ -16,6 +16,7 @@ import {
 } from "chart.js";
 
 import { Line } from "vue-chartjs";
+import { getMonthName } from "../../utils";
 
 ChartJS.register(
   CategoryScale,
@@ -35,7 +36,8 @@ export default {
       const data = [];
 
       this.data.forEach((d) => {
-        labels.push(`${d.month}, ${d.year}`);
+        labels.push(`${getMonthName(parseInt(d.month))}, ${d.year}`);
+
         data.push(d.value);
       });
 
@@ -45,8 +47,8 @@ export default {
           {
             data,
             label: "Space value",
-            borderColor: "rgb(54, 162, 235)",
-            backgroundColor: "rgb(54, 162, 235, 0.5)",
+            borderColor: "#86bbd8",
+            backgroundColor: "#86bbd8",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,

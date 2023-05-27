@@ -32,8 +32,9 @@ const login = async (email, password) => {
   return data;
 };
 
-const getCurrentUser = () => {
-  return axios.get("/api/auth/currentUser");
+const getCurrentUser = async () => {
+  const { data } = await axios.get("/api/auth/currentUser");
+  return data;
 };
 
 const getSpaces = async () => {

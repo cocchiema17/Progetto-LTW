@@ -1,140 +1,188 @@
 <template>
   <div class="home-container">
-    <Navbar :user="user" />
+    <Navbar />
 
-    <Charts />
+    <Charts ref="chartsComp" />
 
-    <TableHeader
-      :totalTransactions="totalTransactions"
-      :totalPages="totalPages"
-      @new-tx="onNewTx"
-      @new-filters="onNewFilters"
-    />
-
-    <div class="table-responsive p-2">
-      <table class="table table-hover">
-        <div
-          class="spinner-border text-primary"
-          role="status"
-          v-if="isLoading"
-        />
-        <thead class="sticky-top">
-          <tr class="">
-            <th scope="col">#</th>
-            <th scope="col" @click="sortByColumn('title')" class="pointer">
-              Title
-              <span v-if="asc == 'ASC' && currentSort == 'title'">
-                <i class="bi bi-sort-down text-success"></i>
-              </span>
-              <span v-else>
-                <i class="bi bi-sort-up text-success"></i>
-              </span>
-            </th>
-            <th
-              scope="col"
-              @click="sortByColumn('description')"
-              class="pointer"
-            >
-              Description
-              <span v-if="asc == 'ASC' && currentSort == 'description'">
-                <i class="bi bi-sort-down text-success"></i>
-              </span>
-              <span v-else>
-                <i class="bi bi-sort-up text-success"></i>
-              </span>
-            </th>
-            <th scope="col" @click="sortByColumn('value')" class="pointer">
-              Amount
-              <span v-if="asc == 'ASC' && currentSort == 'value'">
-                <i class="bi bi-sort-down text-success"></i>
-              </span>
-              <span v-else>
-                <i class="bi bi-sort-up text-success"></i>
-              </span>
-            </th>
-            <th scope="col" @click="sortByColumn('name')" class="pointer">
-              Space
-              <span v-if="asc == 'ASC' && currentSort == 'name'">
-                <i class="bi bi-sort-down text-success"></i>
-              </span>
-              <span v-else>
-                <i class="bi bi-sort-up text-success"></i>
-              </span>
-            </th>
-            <th
-              scope="col"
-              @click="sortByColumn('categoryName')"
-              class="pointer"
-            >
-              Category
-              <span v-if="asc == 'ASC' && currentSort == 'categoryName'">
-                <i class="bi bi-sort-down text-success"></i>
-              </span>
-              <span v-else>
-                <i class="bi bi-sort-up text-success"></i>
-              </span>
-            </th>
-            <th
-              scope="col"
-              @click="sortByColumn('transactionDate')"
-              class="pointer"
-            >
-              Date
-              <span v-if="asc == 'ASC' && currentSort == 'transactionDate'">
-                <i class="bi bi-sort-down text-success"></i>
-              </span>
-              <span v-else>
-                <i class="bi bi-sort-up text-success"></i>
-              </span>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="t in transactions" :key="t.id">
-            <th scope="row">{{ t.row_number }}</th>
-            <td>{{ t.title }}</td>
-            <td>{{ t.description }}</td>
-            <td :class="t.type == 'expense' ? 'text-danger' : 'text-success'">
-              {{ (t.type == "expense" ? "" : "+") + t.value + " € " }}
-            </td>
-            <td>{{ t.spaceName }}</td>
-            <td>
-              <span
-                class="badge"
-                :style="{
-                  background: t.categoryColor + ' !important',
-                  color: isColorLight(t.categoryColor) ? 'black' : 'white',
-                  fontSize: '15px',
-                }"
-                >{{ t.categoryName }}</span
-              >
-            </td>
-            <td>
-              {{ new Date(t.transactionDate).toLocaleDateString() }}
-            </td>
-            <td class="d-flex">
-              <button class="btn btn-outline-success me-3" @click="updateTransaction(t)">
-                <i class="bi bi-pencil-square"></i>
-              </button>
-              <button
-                class="btn btn-outline-danger"
-                @click="deleteTransaction(t)"
-              >
-                <i class="bi bi-trash-fill"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <TableHeader
+            :totalTransactions="totalTransactions"
+            :totalPages="totalPages"
+            @new-tx="onNewTx"
+            @new-filters="onNewFilters"
+          />
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col">
+          <div
+            class="table-responsive"
+          >
+            <table class="table table-hover align-middle">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                v-if="isLoading"
+              />
+              <thead class="sticky-top">
+                <tr class="">
+                  <th scope="col">#</th>
+                  <th
+                    scope="col"
+                    @click="sortByColumn('title')"
+                    class="pointer"
+                  >
+                    <div class="d-flex flex-nowrap">
+                      <span class="me-2">Title</span>
+                      <span v-if="asc == 'ASC' && currentSort == 'title'">
+                        <i class="bi bi-sort-down text-success"></i>
+                      </span>
+                      <span v-else>
+                        <i class="bi bi-sort-up text-success"></i>
+                      </span>
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    @click="sortByColumn('description')"
+                    class="pointer"
+                  >
+                    <div class="d-flex flex-nowrap">
+                      <span class="me-2">Description</span>
+                      <span v-if="asc == 'ASC' && currentSort == 'description'">
+                        <i class="bi bi-sort-down text-success"></i>
+                      </span>
+                      <span v-else>
+                        <i class="bi bi-sort-up text-success"></i>
+                      </span>
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    @click="sortByColumn('value')"
+                    class="pointer"
+                  >
+                    <div class="d-flex flex-nowrap">
+                      <span class="me-2">Amount</span>
+                      <span v-if="asc == 'ASC' && currentSort == 'value'">
+                        <i class="bi bi-sort-down text-success"></i>
+                      </span>
+                      <span v-else>
+                        <i class="bi bi-sort-up text-success"></i>
+                      </span>
+                    </div>
+                  </th>
+                  <th scope="col" @click="sortByColumn('name')" class="pointer">
+                    <div class="d-flex flex-nowrap">
+                      <span class="me-2">Space</span>
+                      <span v-if="asc == 'ASC' && currentSort == 'name'">
+                        <i class="bi bi-sort-down text-success"></i>
+                      </span>
+                      <span v-else>
+                        <i class="bi bi-sort-up text-success"></i>
+                      </span>
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    @click="sortByColumn('categoryName')"
+                    class="pointer"
+                  >
+                    <div class="d-flex flex-nowrap">
+                      <span class="me-2">Category</span>
+                      <span
+                        v-if="asc == 'ASC' && currentSort == 'categoryName'"
+                      >
+                        <i class="bi bi-sort-down text-success"></i>
+                      </span>
+                      <span v-else>
+                        <i class="bi bi-sort-up text-success"></i>
+                      </span>
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    @click="sortByColumn('transactionDate')"
+                    class="pointer"
+                  >
+                    <div class="d-flex flex-nowrap">
+                      <span class="me-2">Date</span>
+                      <span
+                        v-if="asc == 'ASC' && currentSort == 'transactionDate'"
+                      >
+                        <i class="bi bi-sort-down text-success"></i>
+                      </span>
+                      <span v-else>
+                        <i class="bi bi-sort-up text-success"></i>
+                      </span>
+                    </div>
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="t in transactions" :key="t.id">
+                  <th scope="row">{{ t.row_number }}</th>
+                  <td>{{ t.title }}</td>
+                  <td>{{ t.description }}</td>
+                  <td
+                    :class="
+                      t.type == 'expense' ? 'text-danger' : 'text-success'
+                    "
+                  >
+                    {{ (t.type == "expense" ? "" : "+") + t.value + " € " }}
+                  </td>
+                  <td>{{ t.spaceName }}</td>
+                  <td>
+                    <span
+                      class="badge"
+                      :style="{
+                        background: t.categoryColor + ' !important',
+                        color: isColorLight(t.categoryColor)
+                          ? 'black'
+                          : 'white',
+                        fontSize: '15px',
+                      }"
+                      >{{ t.categoryName }}</span
+                    >
+                  </td>
+                  <td>
+                    {{ new Date(t.transactionDate).toLocaleDateString() }}
+                  </td>
+                  <td class="d-flex">
+                    <button
+                      class="btn btn-outline-success me-2"
+                      @click="updateTransaction(t)"
+                    >
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button
+                      class="btn btn-outline-danger"
+                      @click="deleteTransaction(t)"
+                    >
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <PaginationButtons
+            v-if="totalPages != 0"
+            :totalPages="totalPages"
+            :pageSize="pageSize"
+            :selectedPage="selectedPage"
+            @page-clicked="onPageClicked"
+          />
+        </div>
+      </div>
     </div>
-    <PaginationButtons
-      v-if="totalPages != 0"
-      :totalPages="totalPages"
-      :pageSize="pageSize"
-      :selectedPage="selectedPage"
-      @page-clicked="onPageClicked"
-    />
   </div>
 </template>
 
@@ -144,7 +192,7 @@ import {
   getCategories,
   getTransactions,
   deleteTransaction,
-  updateTransaction
+  updateTransaction,
 } from "../api";
 
 import { mapGetters } from "vuex";
@@ -187,7 +235,7 @@ export default {
       const results = await Promise.all([
         getSpaces(),
         getCategories(),
-        getTransactions(0),
+        getTransactions(0, this.pageSize),
       ]);
 
       this.$store.dispatch("spaces", results[0]);
@@ -204,7 +252,8 @@ export default {
   },
   methods: {
     async onNewTx(tx) {
-      await this.fetchTransactions(this.selectedPage);
+      this.fetchTransactions(this.selectedPage);
+      this.$refs.chartsComp.refresh();
 
       const c = this.categories.find(
         (c) => c.spaceId == tx.spaceId && c.categoryName == tx.categoryName
@@ -274,23 +323,32 @@ export default {
       );
     },
     async deleteTransaction(transaction) {
-      await deleteTransaction(transaction.id);
-      this.newToast("transaction deleted", TYPE.SUCCESS);
-      this.fetchTransactions(
-        this.selectedPage,
-        this.filters,
-        this.currentSort,
-        this.asc
-      );
-      // fare chiamata get per aggiornare i grafici
+      try {
+        await deleteTransaction(transaction.id);
+        this.newToast("Transaction deleted", TYPE.SUCCESS);
+
+        this.fetchTransactions(
+          this.selectedPage,
+          this.filters,
+          this.currentSort,
+          this.asc
+        );
+        this.$refs.chartsComp.refresh();
+      } catch (err) {
+        this.newToast("Transaction deletion failed", TYPE.ERROR);
+      }
     },
     async updateTransaction(transaction) {
-      console.log("UPDATE", transaction);
-      await updateTransaction(transaction);
-      // fare chiamata get per aggiornare i grafici
+      try {
+        await updateTransaction(transaction);
+        this.newToast("Transaction updated", TYPE.SUCCESS);
+
+        this.chartsComp.refresh();
+      } catch (err) {
+        this.newToast("Transaction update failed", TYPE.ERROR);
+      }
     },
     isColorLight(color) {
-      console.log(color, Color(color).isLight(color));
       return Color(color).isLight(color);
     },
   },

@@ -109,7 +109,7 @@ export default {
     async onSubmit() {
       try {
         const data = await login(this.email, this.password);
-        console.log(data);
+
         localStorage.setItem("csrfToken", data.csrfToken);
         this.$store.dispatch("user", data.user);
         this.$store.dispatch("isLogged", true);

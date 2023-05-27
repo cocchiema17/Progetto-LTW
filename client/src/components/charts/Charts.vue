@@ -75,7 +75,6 @@ import BarChart from "./BarChart";
 
 export default {
   name: "ChartsComp",
-  props: ["spaceId"],
   components: {
     PieChart,
     LineChart,
@@ -126,6 +125,9 @@ export default {
       } catch (err) {
         this.newToast("Failed to load charts", TYPE.ERROR);
       }
+    },
+    refresh() {
+      this.loadsCharts(this.selectedSpace, this.fromDate, this.toDate);
     },
   },
 };
