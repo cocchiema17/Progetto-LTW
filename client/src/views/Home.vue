@@ -113,9 +113,8 @@
             <td>
               {{ new Date(t.transactionDate).toLocaleDateString() }}
             </td>
-
-            <td>
-              <button class="btn btn-outline-success me-2">
+            <td class="d-flex">
+              <button class="btn btn-outline-success me-3" @click="updateTransaction(t)">
                 <i class="bi bi-pencil-square"></i>
               </button>
               <button
@@ -145,6 +144,7 @@ import {
   getCategories,
   getTransactions,
   deleteTransaction,
+  updateTransaction
 } from "../api";
 
 import { mapGetters } from "vuex";
@@ -219,6 +219,7 @@ export default {
           spaceName: space.name,
         });
       }
+      // fare chiamata get per aggiornare i grafici
     },
     onPageClicked(page) {
       this.selectedPage = page;
@@ -272,10 +273,21 @@ export default {
         this.asc
       );
     },
-    // TO DO
-    async deleteTransaction(transition) {
-      // console.log("DELETE", transition.id);
-      await deleteTransaction(transition.id);
+    async deleteTransaction(transaction) {
+      await deleteTransaction(transaction.id);
+      this.newToast("transaction deleted", TYPE.SUCCESS);
+      this.fetchTransactions(
+        this.selectedPage,
+        this.filters,
+        this.currentSort,
+        this.asc
+      );
+      // fare chiamata get per aggiornare i grafici
+    },
+    async updateTransaction(transaction) {
+      console.log("UPDATE", transaction);
+      await updateTransaction(transaction);
+      // fare chiamata get per aggiornare i grafici
     },
     isColorLight(color) {
       console.log(color, Color(color).isLight(color));

@@ -85,7 +85,8 @@ router.post(
   ],
   validationHandler,
   async (req, res) => {
-    const { title, description, date, categoryName, color, spaceId, value } = req.body;
+    const { title, description, date, categoryName, color, spaceId, value } =
+      req.body;
 
     const tx = await pgClient.createTransaction({
       title,
@@ -101,7 +102,6 @@ router.post(
   }
 );
 
-// TO DO
 router.delete(
   "/transactions/:id",
   csrfProtection,
@@ -117,11 +117,21 @@ router.delete(
       }
       res.sendStatus(204);
     } catch (err) {
-      if (err.code == '22P02') { // not uuid
+      if (err.code == "22P02") {
+        // not uuid
         throw new NotFoundError();
       }
     }
+  }
+);
 
+router.put(
+  "/transactions/:id",
+  csrfProtection,
+  currentUser,
+  requireAuth,
+  async (req, res) => {
+    console.log("UPDATE ROUTER");
   }
 );
 
