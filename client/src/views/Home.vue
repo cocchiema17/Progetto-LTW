@@ -18,11 +18,11 @@
             <th scope="col">#</th>
             <th scope="col" @click="sortByColumn('title')" class="pointer">
               Title
-              <span v-if="asc == 'ASC' && currentSort == 'title'">
-                <i class="bi bi-caret-down-square text-success"></i>
+              <span v-if="asc == 'ASC' && currentSort == 'description'">
+                <i class="bi bi-sort-down text-success"></i>
               </span>
               <span v-else>
-                <i class="bi bi-caret-up-square text-success"></i>
+                <i class="bi bi-sort-up text-success"></i>
               </span>
             </th>
             <th
@@ -32,28 +32,28 @@
             >
               Description
               <span v-if="asc == 'ASC' && currentSort == 'description'">
-                <i class="bi bi-caret-down-square-fill text-success"></i>
+                <i class="bi bi-sort-down text-success"></i>
               </span>
               <span v-else>
-                <i class="bi bi-caret-up-square-fill text-success"></i>
+                <i class="bi bi-sort-up text-success"></i>
               </span>
             </th>
             <th scope="col" @click="sortByColumn('value')" class="pointer">
               Amount
               <span v-if="asc == 'ASC' && currentSort == 'value'">
-                <i class="bi bi-caret-down-square-fill text-success"></i>
+                <i class="bi bi-sort-down text-success"></i>
               </span>
               <span v-else>
-                <i class="bi bi-caret-up-square-fill text-success"></i>
+                <i class="bi bi-sort-up text-success"></i>
               </span>
             </th>
             <th scope="col" @click="sortByColumn('name')" class="pointer">
               Space
               <span v-if="asc == 'ASC' && currentSort == 'name'">
-                <i class="bi bi-caret-down-square-fill text-success"></i>
+                <i class="bi bi-sort-down text-success"></i>
               </span>
               <span v-else>
-                <i class="bi bi-caret-up-square-fill text-success"></i>
+                <i class="bi bi-sort-up text-success"></i>
               </span>
             </th>
             <th
@@ -63,10 +63,10 @@
             >
               Category
               <span v-if="asc == 'ASC' && currentSort == 'categoryName'">
-                <i class="bi bi-caret-down-square-fill text-success"></i>
+                <i class="bi bi-sort-down text-success"></i>
               </span>
               <span v-else>
-                <i class="bi bi-caret-up-square-fill text-success"></i>
+                <i class="bi bi-sort-up text-success"></i>
               </span>
             </th>
             <th
@@ -76,10 +76,10 @@
             >
               Date
               <span v-if="asc == 'ASC' && currentSort == 'transactionDate'">
-                <i class="bi bi-caret-down-square-fill text-success"></i>
+                <i class="bi bi-sort-down text-success"></i>
               </span>
               <span v-else>
-                <i class="bi bi-caret-up-square-fill text-success"></i>
+                <i class="bi bi-sort-up text-success"></i>
               </span>
             </th>
             <th scope="col"></th>
@@ -136,7 +136,7 @@ import {
   getSpaces,
   getCategories,
   getTransactions,
-  deleteTransaction
+  deleteTransaction,
 } from "../api";
 
 import { mapGetters } from "vuex";
@@ -208,12 +208,7 @@ export default {
     },
     onPageClicked(page) {
       this.selectedPage = page;
-      this.fetchTransactions(
-        page,
-        this.filters,
-        this.currentSort,
-        this.asc
-      );
+      this.fetchTransactions(page, this.filters, this.currentSort, this.asc);
     },
     async fetchTransactions(page, filters, sortColumn = null, asc = null) {
       console.log("FETCH TRANSACTIONS", sortColumn, asc);

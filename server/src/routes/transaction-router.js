@@ -5,6 +5,8 @@ const csrfProtection = require("../middlewares/csrf-protection");
 const validationHandler = require("../middlewares/validate-request-handler");
 const pgClient = require("../pg-client");
 const { query, body } = require("express-validator");
+const NotFoundError = require("../errors/not-found-error");
+
 const router = express.Router();
 
 router.get(
@@ -104,7 +106,20 @@ router.delete(
   currentUser,
   requireAuth,
   async (req, res) => {
-    console.log("DELETE");
+    const txId = req.params.id;
+
+    try {
+      const rowCount = await pgClient.deleteTransaction(txId);
+      if (rowCount == 0) {
+        throw new NotFoundError();
+      }
+      res.sendStatus(204);
+    } catch (err) {
+      if (err.code == '22P02') { // not uuid
+        throw new NotFoundError();
+      }
+    }
+
   }
 );
 

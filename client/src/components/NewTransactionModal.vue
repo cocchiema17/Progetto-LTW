@@ -80,8 +80,12 @@
                   </option>
                 </datalist>
               </div>
-              <div class="col-4 ps-3 m-0" id="color-conteiner" v-show="!this.selectedCategory && this.selectedCategory != ''">
-                <label class="form-check-label" for="color"> Color </label>
+
+              <div
+                class="col-6"
+                :v-if="!this.selectedCategory && this.selectedCategory != ''"
+              >
+                <label class="form-label" for="color"> Color </label>
                 <input
                   class="form-control"
                   type="color"
@@ -139,12 +143,6 @@ export default {
   name: "NewTransactionModalComp",
   computed: {
     ...mapGetters(["spaces", "categories"]),
-    selectedCategories() {
-      if (!this.spaces || this.spaces.length === 0) return [];
-
-      const spaceId = this.spaces[this.spaceIdx].id;
-      return this.categories.filter((c) => c.spaceId === spaceId);
-    },
   },
   components: { MoneyInput },
   props: ["name"],
@@ -159,7 +157,6 @@ export default {
       color: "",
       value: null,
       formValidated: false,
-      selectedCategory: ""
     };
   },
   methods: {
@@ -191,11 +188,6 @@ export default {
       } else {
         this.formValidated = true;
       }
-    },
-    onChangeCategory() {
-      this.selectedCategory = this.selectedCategories.find(
-        (c) => c.name === this.categoryName
-      );
     },
   },
 };

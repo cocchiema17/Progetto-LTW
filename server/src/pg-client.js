@@ -214,11 +214,6 @@ class PgClient {
     }
   }
 
-  // TO DO
-  async deleteTransacrion(id) {
-    await pool.query(`DELETE FROM "transaction" WHERE id = $1`, [id]);
-  }
-
   async getBarChartData(userId, spaceId, fromDate, toDate) {
     // 2 barre verticali per mese: entrate e uscite per uno space
 
@@ -321,7 +316,10 @@ class PgClient {
   }
 
   // TO DO
-  async deleteTransacrion() { }
+  async deleteTransaction(txId) {
+    const { rowCount } = await pool.query('DELETE FROM transaction WHERE id = $1', [txId]);
+    return rowCount;
+  }
 }
 
 module.exports = new PgClient();
