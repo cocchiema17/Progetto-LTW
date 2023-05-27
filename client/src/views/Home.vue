@@ -13,6 +13,11 @@
 
     <div class="table-responsive p-2">
       <table class="table table-hover">
+        <div
+          class="spinner-border text-primary"
+          role="status"
+          v-if="isLoading"
+        />
         <thead class="sticky-top">
           <tr class="">
             <th scope="col">#</th>
@@ -166,6 +171,7 @@ export default {
       currentSort: "transactionDate",
       asc: "DESC",
       filters: {},
+      isLoading: false,
     };
   },
   components: {
@@ -176,6 +182,8 @@ export default {
   },
   async created() {
     try {
+      this.isLoading = true;
+
       const results = await Promise.all([
         getSpaces(),
         getCategories(),
@@ -190,6 +198,8 @@ export default {
       this.totalPages = results[2].totalPages;
     } catch (err) {
       this.newToast("Failed to load data", TYPE.ERROR);
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -215,18 +225,25 @@ export default {
       this.fetchTransactions(page, this.filters, this.currentSort, this.asc);
     },
     async fetchTransactions(page, filters, sortColumn = null, asc = null) {
-      console.log("FETCH TRANSACTIONS", sortColumn, asc);
-      const { totalElements, totalPages, value } = await getTransactions(
-        page,
-        this.pageSize,
-        filters,
-        sortColumn,
-        asc
-      );
+      try {
+        this.isLoading = true;
 
-      this.transactions = value;
-      this.totalTransactions = totalElements;
-      this.totalPages = totalPages;
+        const { totalElements, totalPages, value } = await getTransactions(
+          page,
+          this.pageSize,
+          filters,
+          sortColumn,
+          asc
+        );
+
+        this.transactions = value;
+        this.totalTransactions = totalElements;
+        this.totalPages = totalPages;
+      } catch (err) {
+        this.newToast("Failed to load data", TYPE.ERROR);
+      } finally {
+        this.isLoading = false;
+      }
     },
     onNewFilters(filters) {
       this.filters = filters;
@@ -269,6 +286,16 @@ export default {
 </script>
 
 <style scoped>
+table {
+  position: relative;
+}
+
+.spinner-border {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
 .home-container {
   height: 100%;
   max-height: 100%;
