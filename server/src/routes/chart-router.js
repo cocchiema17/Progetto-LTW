@@ -13,16 +13,18 @@ router.get("/charts",
   currentUser,
   requireAuth,
   [
-    query("spaceId").trim().notEmpty().withMessage("Space id is required")
+    query("spaceId").trim().notEmpty().withMessage("Space id is required"),
+    query("fromDate").optional().isDate({ format: 'YYYY-MM-DD' }).withMessage("Invalid date format"),
+    query("toDate").optional().isDate({ format: 'YYYY-MM-DD' }).withMessage("Invalid date format")
   ],
   validationHandler,
   async (req, res) => {
-    const { spaceId } = req.query;
+    const { spaceId, fromDate, toDate } = req.query;
 
     const results = await Promise.all([
-      pgClient.getBarChartData(req.currentUser.id, spaceId),
-      pgClient.getLineChartData(req.currentUser.id, spaceId),
-      pgClient.getPieChartData(req.currentUser.id, spaceId),
+      pgClient.getBarChartData(req.currentUser.id, spaceId, fromDate, toDate),
+      pgClient.getLineChartData(req.currentUser.id, spaceId, fromDate, toDate),
+      pgClient.getPieChartData(req.currentUser.id, spaceId, fromDate, toDate),
     ]);
 
     const response = {

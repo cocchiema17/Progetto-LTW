@@ -34,9 +34,6 @@ router.post("/signin",
       throw new BadRequestError("Bad credentials");
     }
 
-    /*if (!user.emailActivated) {
-      throw new BadRequestError("Email is not validated");
-    }*/
 
     const userJwt = jwt.sign(
       {
@@ -46,7 +43,7 @@ router.post("/signin",
         email: user.email
       },
       jwtKey,
-      { expiresIn: "1800s" }
+      { expiresIn: "14d" }
     );
 
     const csrfToken = randomBytes(20).toString("hex");

@@ -4,8 +4,6 @@ require('express-async-errors');
 const app = express();
 const loginRouter = require("./routes/auth/login-router");
 const registerRouter = require("./routes/auth/register-router");
-const resetRouter = require("./routes/auth/reset-router");
-const forgotRouter = require("./routes/auth/forgot-router");
 const currentUser = require("./routes/auth/current-user-router");
 const logout = require("./routes/auth/logout-router");
 
@@ -29,8 +27,6 @@ app.use(cookieParser());
 
 app.use("/api/auth", loginRouter);
 app.use("/api/auth", registerRouter);
-app.use("/api/auth", resetRouter);
-app.use("/api/auth", forgotRouter);
 app.use("/api/auth", currentUser);
 app.use("/api/auth", logout);
 
