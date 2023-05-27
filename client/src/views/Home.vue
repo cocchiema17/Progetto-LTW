@@ -12,7 +12,7 @@
     />
 
     <div class="table-responsive p-2">
-      <table class="table">
+      <table class="table table-hover">
         <thead class="sticky-top">
           <tr class="">
             <th scope="col">#</th>
@@ -94,18 +94,25 @@
               {{ (t.type == "expense" ? "" : "+") + t.value + " € " }}
             </td>
             <td>{{ t.spaceName }}</td>
-            <td>{{ t.categoryName }}</td>
+            <td>
+              <span
+                class="badge"
+                :style="{
+                  background: t.categoryColor + ' !important',
+                  color: isColorLight(t.categoryColor) ? 'black' : 'white',
+                  fontSize: '15px',
+                }"
+                >{{ t.categoryName }}</span
+              >
+            </td>
             <td>
               {{ new Date(t.transactionDate).toLocaleDateString() }}
             </td>
+
             <td>
-              <button
-                class="btn btn-outline-success"
-              >
-              <i class="bi bi-pencil-square"></i>
+              <button class="btn btn-outline-success me-2">
+                <i class="bi bi-pencil-square"></i>
               </button>
-            </td>
-            <td>
               <button
                 class="btn btn-outline-danger"
                 @click="deleteTransaction(t)"
@@ -118,6 +125,7 @@
       </table>
     </div>
     <PaginationButtons
+      v-if="totalPages != 0"
       :totalPages="totalPages"
       :pageSize="pageSize"
       :selectedPage="selectedPage"
@@ -140,6 +148,7 @@ import TableHeader from "../components/TableHeader";
 import PaginationButtons from "../components/PaginationButtons";
 import Charts from "../components/charts/Charts";
 import { TYPE } from "vue-toastification";
+import Color from "color";
 
 export default {
   name: "HomePage",
@@ -250,6 +259,10 @@ export default {
     async deleteTransaction(transition) {
       // console.log("DELETE", transition.id);
       await deleteTransaction(transition.id);
+    },
+    isColorLight(color) {
+      console.log(color, Color(color).isLight(color));
+      return Color(color).isLight(color);
     },
   },
 };

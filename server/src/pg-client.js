@@ -28,56 +28,6 @@ class PgClient {
     return rows[0];
   }
 
-  async saveResetToken(userId, token, expiresAt) {
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-      await client.query(`DELETE FROM "passwordReset" WHERE "userId"=$1`, [
-        userId,
-      ]);
-      await client.query(
-        `INSERT INTO "passwordReset" ("userId", "token", "expiresAt") VALUES ($1, $2, $3)`,
-        [userId, token, expiresAt]
-      );
-      await client.query("COMMIT");
-    } catch (e) {
-      await client.query("ROLLBACK");
-      throw e;
-    } finally {
-      client.release();
-    }
-  }
-
-  async getResetToken(userId, token) {
-    const { rowCount, rows } = await pool.query(
-      `SELECT * FROM "passwordReset" WHERE  "userId"=$1 AND "token"=$2`,
-      [userId, token]
-    );
-
-    return rowCount == 1 ? rows[0] : null;
-  }
-
-  async changePassword(userId, token, newPassword) {
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-      await client.query(
-        `UPDATE "passwordReset" SET "consumed"=true WHERE "userId"=$1 AND "token"=$2`,
-        [userId, token]
-      );
-      await client.query(`UPDATE "user" SET "password"=$1 WHERE "id"=$2`, [
-        newPassword,
-        userId,
-      ]);
-      await client.query("COMMIT");
-    } catch (e) {
-      await client.query("ROLLBACK");
-      throw e;
-    } finally {
-      client.release();
-    }
-  }
-
   async getUserTransactions(userId, filters_param, sort_param) {
     const {
       page,
@@ -141,8 +91,8 @@ class PgClient {
     const sortStatement = sortColumn ? `"${sortColumn}"` : '"transactionDate"';
 
     const { rows } = await pool.query(
-      `SELECT t.*, s."name" as "spaceName", s."userId", ROW_NUMBER() OVER ( ORDER BY ${sortStatement} ${asc == "ASC" ? "ASC" : "DESC"} ) 
-        FROM transaction t JOIN space s ON t."spaceId" = s.id WHERE "userId" = $1
+      `SELECT t.*, s."name" as "spaceName", s."userId", c.color as "categoryColor", ROW_NUMBER() OVER ( ORDER BY ${sortStatement} ${asc == "ASC" ? "ASC" : "DESC"} ) 
+        FROM transaction t JOIN space s ON t."spaceId" = s.id JOIN category c ON c."spaceId" = t."spaceId" AND c."name" = t."categoryName"  WHERE "userId" = $1
        ${filters.length > 0 ? " AND " : ""} ${filters.join(
         " AND "
       )} LIMIT $2 OFFSET $3`,
@@ -214,12 +164,9 @@ class PgClient {
     }
   }
 
-  async getBarChartData(userId, spaceId, fromDate, toDate) {
+  async getBarChartData(spaceId, fromDate, toDate) {
     // 2 barre verticali per mese: entrate e uscite per uno space
-
     const filters = [];
-
-    filters.push(`"userId" = '${userId}'`);
 
     filters.push(`"spaceId" = '${spaceId}'`);
 
@@ -232,28 +179,23 @@ class PgClient {
     }
 
     const { rows } = await pool.query(`
-    SELECT 
-    type,
-    COUNT(*) as count,
-    SUM(value) as total,
-    date_part('year', "transactionDate"::date) as year,
-    date_part('month', "transactionDate"::date) as month 
-    FROM transaction t JOIN space s ON t."spaceId" = s."id"
-    WHERE ${filters.join(" AND ")}
-    GROUP BY "type", year, month
-    ORDER BY year, month`
+        SELECT 
+        type,
+        COUNT(*) as count,
+        ABS(SUM(value)) as total,
+        date_part('year', "transactionDate"::date) as year,
+        date_part('month', "transactionDate"::date) as month 
+        FROM transaction t
+        WHERE ${filters.join(" AND ")}
+        GROUP BY "type", year, month
+        ORDER BY year, month`
     );
 
     return rows;
   }
 
-  async getPieChartData(userId, spaceId, fromDate, toDate) {
-    // torta che conta le categorie in uno space
-
-
+  async getPieChartData(spaceId, fromDate, toDate) {
     const filters = [];
-
-    filters.push(`"userId" = '${userId}'`);
 
     filters.push(`"spaceId" = '${spaceId}'`);
 
@@ -266,15 +208,23 @@ class PgClient {
     }
 
     const { rows } = await pool.query(
-      `SELECT "categoryName", COUNT(*) FROM transaction t JOIN space s ON t."spaceId" = s."id" WHERE ${filters.join(" AND ")} GROUP BY "categoryName"`);
+      `WITH subquery as (
+        SELECT "categoryName", "spaceId", COUNT(*)
+        FROM transaction
+        WHERE ${filters.join(" AND ")}
+        GROUP BY "categoryName", "spaceId"
+      )  
+                
+      SELECT "categoryName", color, count
+      FROM category c
+      JOIN subquery on c.name = subquery."categoryName" AND c."spaceId" = subquery."spaceId"`
+    );
     return rows;
   }
 
-  async getLineChartData(userId, spaceId, fromDate, toDate) {
+  async getLineChartData(spaceId, fromDate, toDate) {
     // torna il valore di uno space sempre su base mensile
     const filters = [];
-
-    filters.push(`"userId" = '${userId}'`);
 
     filters.push(`"spaceId" = '${spaceId}'`);
 
@@ -287,30 +237,30 @@ class PgClient {
     }
 
     const { rows } = await pool.query(`
-    WITH subquery AS  (
-        SELECT
-            date_part('year', "transactionDate"::date) as year,
-            date_part('month', "transactionDate"::date) as month,
-            SUM(value) AS value
-          FROM transaction t JOIN space s ON t."spaceId" = s."id"
-          WHERE ${filters.join(" AND ")}
-        GROUP BY
-            date_part('month', "transactionDate"::date),
-      date_part('year', "transactionDate"::date) 
-        ORDER BY
-      date_part('year', "transactionDate"::date),
-            date_part('month', "transactionDate"::date)
-    )   
-    SELECT
-      A.year,
-        A.month,
-        SUM(B.value) AS value
-    FROM
-        subquery A
-      JOIN subquery B 
-      ON ((B.year < A.year OR (B.year = A.year and B.month <= A.month)) )
-    GROUP by A.year, A.month
-    ORDER by A.year, A.month ASC`
+      WITH subquery AS  (
+          SELECT
+              date_part('year', "transactionDate"::date) as year,
+              date_part('month', "transactionDate"::date) as month,
+              SUM(value) AS value
+            FROM transaction t
+            WHERE ${filters.join(" AND ")}
+          GROUP BY
+              date_part('month', "transactionDate"::date),
+        date_part('year', "transactionDate"::date) 
+          ORDER BY
+        date_part('year', "transactionDate"::date),
+              date_part('month', "transactionDate"::date)
+      )   
+      SELECT
+        A.year,
+          A.month,
+          SUM(B.value) AS value
+      FROM
+          subquery A
+        JOIN subquery B 
+        ON ((B.year < A.year OR (B.year = A.year and B.month <= A.month)) )
+      GROUP by A.year, A.month
+      ORDER by A.year, A.month ASC`
     );
     return rows;
   }
