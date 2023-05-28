@@ -47,11 +47,18 @@ export default {
           {
             data,
             label: "Space value",
-            borderColor: "#86bbd8",
-            backgroundColor: "#86bbd8",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,
+            pointBackgroundColor: function (context) {
+              var value = context.dataset.data[context.dataIndex];
+              return value < 0 ? "#ff3a3a" : "#3a6bff";
+            },
+            pointBorderColor: function (context) {
+              var value = context.dataset.data[context.dataIndex];
+              return value < 0 ? "#ff3a3a" : "#3a6bff";
+            },
+            borderColor: '#72d377'
           },
         ],
       };

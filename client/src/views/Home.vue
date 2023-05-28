@@ -152,7 +152,7 @@
                   </td>
                   <td class="d-flex">
                     <button
-                      class="btn btn-outline-success me-2"
+                      class="btn btn-outline-primary me-2"
                       @click="updateTransaction(t)"
                     >
                       <i class="bi bi-pencil-square"></i>

@@ -12,7 +12,7 @@
           ></button>
         </div>
         <div class="modal-body">
-          <form ref="spForm" novalidate>
+          <form ref="spForm" novalidate @submit.prevent="onSave">
             <div class="mb-3">
               <label for="name" class="form-label">Name Space</label>
               <input
@@ -24,11 +24,9 @@
                 v-model="name"
                 required
               />
-              <p class="text-danger mt-1" v-if="errMessage">
-                {{ errMessage }}
-              </p>
             </div>
           </form>
+          <Alert :msg="errMessage" :type="'danger'" v-if="errMessage" />
         </div>
         <div class="modal-footer">
           <button
@@ -41,7 +39,7 @@
             Close
           </button>
 
-          <button @click.prevent="onSave" type="button" class="btn btn-success">
+          <button @click.prevent="onSave" type="button" class="btn btn-primary">
             Save
           </button>
         </div>
@@ -54,9 +52,11 @@
 import { mapGetters } from "vuex";
 import { createSpace } from "../api";
 import { TYPE } from "vue-toastification";
+import Alert from "./Alert.vue";
 
 export default (await import("vue")).defineComponent({
   name: "NewSpaceModalComp",
+  components: { Alert },
   computed: {
     ...mapGetters(["user", "spaces", "categories"]),
   },
@@ -84,8 +84,7 @@ export default (await import("vue")).defineComponent({
             this.newToast("Space creation failed", TYPE.ERROR);
           }
         }
-      }
-      else {
+      } else {
         this.errMessage = "The name must have at least 3 characters";
       }
     },

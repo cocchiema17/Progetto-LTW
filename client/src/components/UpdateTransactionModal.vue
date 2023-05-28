@@ -100,7 +100,7 @@
           <button
             @click.prevent="onUpdate"
             type="button"
-            class="btn btn-success"
+            class="btn btn-primary"
           >
             Save
           </button>
@@ -150,29 +150,27 @@ export default {
       // const closeBtn = this.$refs.closeBtn;
 
       if (form.checkValidity()) {
-      //   try {
-      //     const tx = await createTransaction({
-      //       title: this.title,
-      //       description: this.description,
-      //       date: this.date,
-      //       spaceId: this.spaces[this.spaceIdx].id,
-      //       value: this.value,
-      //     });
-
-      //     (tx.spaceName = this.spaces[this.spaceIdx].name),
-      //       (this.formValidated = false);
-
-      //     this.$emit("new-tx", tx);
-      //     closeBtn.click();
-      //     this.newToast("Transaction added", TYPE.SUCCESS);
-      //     this.resetData();
-      //   } catch (err) {
-      //     console.log(err);
-      //     this.newToast("Transaction creation failed", TYPE.ERROR);
-      //   }
-      // } else {
-      //   this.formValidated = true;
-      // }
+        //   try {
+        //     const tx = await createTransaction({
+        //       title: this.title,
+        //       description: this.description,
+        //       date: this.date,
+        //       spaceId: this.spaces[this.spaceIdx].id,
+        //       value: this.value,
+        //     });
+        //     (tx.spaceName = this.spaces[this.spaceIdx].name),
+        //       (this.formValidated = false);
+        //     this.$emit("new-tx", tx);
+        //     closeBtn.click();
+        //     this.newToast("Transaction added", TYPE.SUCCESS);
+        //     this.resetData();
+        //   } catch (err) {
+        //     console.log(err);
+        //     this.newToast("Transaction creation failed", TYPE.ERROR);
+        //   }
+        // } else {
+        //   this.formValidated = true;
+        // }
       }
     },
     resetData() {

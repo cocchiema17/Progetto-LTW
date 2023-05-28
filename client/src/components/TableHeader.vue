@@ -1,6 +1,6 @@
 <template>
   <div
-    class="d-flex flex-wrap align-items-end pt-3 ps-3 pe-3 justify-content-between align-content-center"
+    class="d-flex flex-wrap align-items-end ps-3 pe-3 justify-content-between align-content-center"
   >
     <div class="flex-grow-1">
       <h4>{{ totalTransactions }} Transactions</h4>
@@ -11,7 +11,7 @@
         <div class="btn-group" role="group" aria-label="Basic example">
           <button
             type="button"
-            class="btn btn-outline-success"
+            class="btn btn-outline-primary"
             data-bs-toggle="modal"
             data-bs-target="#newSpaceModal"
           >
@@ -19,16 +19,16 @@
           </button>
           <button
             type="button"
-            class="btn btn-outline-success"
+            class="btn btn-outline-primary"
             data-bs-toggle="modal"
             data-bs-target="#filterModal"
           >
             Filter
-            <span class="badge text-bg-success">{{ filtersNumber }}</span>
+            <span class="badge text-bg-primary">{{ filtersNumber }}</span>
           </button>
           <button
             type="button"
-            class="btn btn-outline-success"
+            class="btn btn-outline-primary"
             @click="onDownload"
           >
             Download
@@ -39,12 +39,12 @@
       <div>
         <button
           type="button"
-          class="btn btn-link text-success"
+          class="btn btn-link text-primary"
           data-bs-toggle="modal"
           data-bs-target="#newTransactionModal"
         >
           Add
-          <i class="bi bi-plus-circle-fill text-success" />
+          <i class="bi bi-plus-circle-fill text-primary" />
         </button>
       </div>
     </div>

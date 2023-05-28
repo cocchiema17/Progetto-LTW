@@ -13,10 +13,7 @@
           ></button>
         </div>
         <div class="modal-body">
-          <form
-            ref="filForm"
-            novalidate
-          >
+          <form ref="filForm" novalidate>
             <div class="mb-3">
               <label for="search" class="form-label">Search:</label>
               <input
@@ -104,7 +101,7 @@
         <div class="modal-footer" style="justify-content: space-between">
           <button
             type="button"
-            class="btn btn-success"
+            class="btn btn-primary"
             @click.prevent="resetFilters()"
           >
             Reset Filters
@@ -122,7 +119,7 @@
             <button
               @click.prevent="onFilter"
               type="button"
-              class="btn btn-success"
+              class="btn btn-primary"
             >
               Filter
             </button>

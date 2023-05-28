@@ -17,7 +17,7 @@ const pool = new Pool({
 const categories = ["Food", "Clothes", "Travel", "Fun"];
 
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 75; i++) {
   const n = faker.commerce.price(0.01, 100000.00);
   const y = i % 2 == 0;
   pool.query(`INSERT INTO public.transaction(

@@ -75,7 +75,7 @@
                 <label class="form-label" for="color"> Color </label>
                 <input
                   class="form-control"
-                  style="height: 38px;"
+                  style="height: 38px"
                   type="color"
                   v-model="color"
                   id="color"
@@ -116,7 +116,7 @@
           >
             Close
           </button>
-          <button @click.prevent="onSave" type="button" class="btn btn-success">
+          <button @click.prevent="onSave" type="button" class="btn btn-primary">
             Save
           </button>
         </div>

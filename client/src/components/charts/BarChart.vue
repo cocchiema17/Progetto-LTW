@@ -58,8 +58,8 @@ export default {
           {
             data: [],
             label: "Expense",
-            borderColor: "#f4442e",
-            backgroundColor: "#f4442e",
+            borderColor: "#ff3a3a",
+            backgroundColor: "#ff3a3a",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,
@@ -67,8 +67,8 @@ export default {
           {
             data: [],
             label: "Revenue",
-            borderColor: "#86bbd8",
-            backgroundColor: "#86bbd8",
+            borderColor: "#3a6bff",
+            backgroundColor: "#3a6bff",
             borderWidth: 1,
             borderRadius: 15,
             borderSkipped: false,

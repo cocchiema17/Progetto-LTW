@@ -117,6 +117,8 @@ export default {
   },
   methods: {
     async loadsCharts(spaceId, fromDate, toDate) {
+      if (!spaceId) return;
+
       try {
         const { data } = await getChartsData(spaceId, fromDate, toDate);
         this.pieChartData = data.pieChart;
