@@ -1,7 +1,12 @@
-const { Pool } = require("pg");
+const pg = require("pg");
+
+pg.types.setTypeParser(1082, function (stringValue) {
+  return stringValue;  //1082 for date type
+});
+
 const keys = require("./keys");
 
-const pool = new Pool({
+const pool = new pg.Pool({
   user: keys.pgUser,
   host: keys.pgHost,
   database: keys.pgDatabase,
@@ -294,6 +299,21 @@ class PgClient {
       "DELETE FROM transaction WHERE id = $1",
       [txId]
     );
+    return rowCount;
+  }
+
+  async updateTransaction(txId, data) {
+    const { rowCount } = await pool.query(
+      'UPDATE transaction SET "title" = $2, description = $3, "transactionDate" = $4, value = $5 WHERE id = $1',
+      [
+        txId,
+        data.title,
+        data.description,
+        data.date,
+        data.value
+      ]
+    );
+
     return rowCount;
   }
 }

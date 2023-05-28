@@ -1,20 +1,16 @@
 <template>
   <div
     class="modal fade"
-    id="updateTransactionModal"
     tabindex="-1"
     aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    id="updateTransactionModal"
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5 text-center">Update Transaction</h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
         </div>
         <div class="modal-body">
           <form
@@ -23,10 +19,9 @@
             :class="{ 'was-validated': formValidated }"
           >
             <div class="mb-3">
-              <label for="title" class="form-label">Title</label>
+              <label class="form-label">Title</label>
               <input
                 class="form-control"
-                type="text"
                 id="title"
                 v-model="title"
                 required
@@ -36,11 +31,10 @@
             </div>
 
             <div class="mb-3">
-              <label for="description" class="form-label">Description</label>
+              <label class="form-label">Description</label>
               <input
                 class="form-control"
                 type="text"
-                id="description"
                 v-model="description"
                 required
                 maxlength="200"
@@ -48,36 +42,14 @@
             </div>
 
             <div class="mb-3">
-              <label for="date" class="form-label">Date</label>
+              <label class="form-label">Date</label>
               <input
                 class="form-control"
                 type="date"
-                id="date"
                 v-model="date"
                 required
                 :max="new Date().toISOString().split('T')[0]"
               />
-            </div>
-
-            <!-- <div class="mb-3">
-                <label for="date" class="form-label">Attachment</label>
-                <input class="form-control" type="file" />
-              </div> -->
-
-            <div class="input-group mb-3">
-              <div class="col-6 p-0 m-0">
-                <label for="space" class="form-label">Space</label>
-                <select
-                  class="form-control"
-                  v-model="spaceIdx"
-                  id="space"
-                  required
-                >
-                  <option v-for="(s, idx) in spaces" :key="idx" :value="idx">
-                    {{ s.name }}
-                  </option>
-                </select>
-              </div>
             </div>
 
             <div class="mb-3">
@@ -91,17 +63,13 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
-            ref="closeBtn"
-            @click.prevent="resetData"
+            @click.prevent="onClose"
+            ref="upCloseBtn"
           >
             Close
           </button>
 
-          <button
-            @click.prevent="onUpdate"
-            type="button"
-            class="btn btn-primary"
-          >
+          <button @click.prevent="onSave" type="button" class="btn btn-primary">
             Save
           </button>
         </div>
@@ -112,9 +80,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-// import { updateTransaction } from "../api";
+import { updateTransaction } from "../api";
 import MoneyInput from "./MoneyInput";
-// import { TYPE } from "vue-toastification";
+import { TYPE } from "vue-toastification";
 
 export default {
   name: "UpdateTransactionModalComp",
@@ -122,61 +90,48 @@ export default {
     ...mapGetters(["spaces", "categories"]),
   },
   components: { MoneyInput },
-  props: ["txToUpdate"],
   data() {
     return {
       title: "",
       description: "",
       date: "",
-      file: null,
-      spaceIdx: 0,
       value: null,
       formValidated: false,
+      txId: null,
     };
   },
-  mounted() {
-    this.title = this.txToUpdate.title;
-    this.description = this.txToUpdate.description;
-    this.date = this.txToUpdate.date;
-    this.spaceIdx = this.txToUpdate.spaceId;
-    this.value = this.txToUpdate.value;
-  },
   methods: {
-    async onUpdate() {
-      console.log("UPDATE IN MODAL");
-      console.log(this.txToUpdate.title);
-      // console.log(this.title);
+    async onSave() {
+      console.log("saving");
       const form = this.$refs.upForm;
-      // const closeBtn = this.$refs.closeBtn;
+      const closeBtn = this.$refs.upCloseBtn;
 
       if (form.checkValidity()) {
-        //   try {
-        //     const tx = await createTransaction({
-        //       title: this.title,
-        //       description: this.description,
-        //       date: this.date,
-        //       spaceId: this.spaces[this.spaceIdx].id,
-        //       value: this.value,
-        //     });
-        //     (tx.spaceName = this.spaces[this.spaceIdx].name),
-        //       (this.formValidated = false);
-        //     this.$emit("new-tx", tx);
-        //     closeBtn.click();
-        //     this.newToast("Transaction added", TYPE.SUCCESS);
-        //     this.resetData();
-        //   } catch (err) {
-        //     console.log(err);
-        //     this.newToast("Transaction creation failed", TYPE.ERROR);
-        //   }
-        // } else {
-        //   this.formValidated = true;
-        // }
+        try {
+          await updateTransaction(this.txId, {
+            title: this.title,
+            description: this.description,
+            date: this.date,
+            value: this.value,
+          });
+
+          this.formValidated = false;
+          this.$emit("tx-updated");
+          closeBtn.click();
+          this.newToast("Transaction updated", TYPE.SUCCESS);
+        } catch (err) {
+          this.newToast("Transaction update failed", TYPE.ERROR);
+        }
+      } else {
+        this.formValidated = true;
       }
     },
-    resetData() {
-      this.title = "";
-      this.description = "";
-      this.date = "";
+    setTx(tx) {
+      this.txId = tx.id;
+      this.title = tx.title;
+      this.description = tx.description;
+      this.date = tx.transactionDate,
+      this.value = tx.value;
     },
   },
 };

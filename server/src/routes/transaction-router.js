@@ -128,14 +128,29 @@ router.delete(
   }
 );
 
-router.put(
+router.patch(
   "/transactions/:id",
   csrfProtection,
   currentUser,
   requireAuth,
+  [
+    body("title").trim().notEmpty(),
+    body("description").trim().notEmpty(),
+    body("date").trim().notEmpty().isDate({ format: "YYYY-MM-DD" }),
+    body("value").trim().notEmpty().isFloat().not().equals(0),
+  ],
+  validationHandler,
   async (req, res) => {
-    console.log("UPDATE ROUTER");
+    const { title, description, date, value } = req.body;
+
+    const rowCount = await pgClient.updateTransaction(req.params.id, { title, description, date, value });
+
+    if (rowCount == 0) {
+      throw new NotFoundError();
+    }
+
+    res.sendStatus(204);
   }
-);
+)
 
 module.exports = router;

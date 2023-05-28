@@ -36,10 +36,10 @@
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Title</span>
                       <span v-if="asc && currentSort == 'title'">
-                        <i class="bi bi-sort-down text-success"></i>
+                        <i class="bi bi-sort-up text-primary"></i>
                       </span>
-                      <span v-else>
-                        <i class="bi bi-sort-up text-success"></i>
+                      <span v-if="!asc && currentSort == 'title'">
+                        <i class="bi bi-sort-down text-primary"></i>
                       </span>
                     </div>
                   </th>
@@ -51,10 +51,10 @@
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Description</span>
                       <span v-if="asc && currentSort == 'description'">
-                        <i class="bi bi-sort-down text-success"></i>
+                        <i class="bi bi-sort-up text-primary"></i>
                       </span>
-                      <span v-else>
-                        <i class="bi bi-sort-up text-success"></i>
+                      <span v-if="!asc && currentSort == 'description'">
+                        <i class="bi bi-sort-down text-primary"></i>
                       </span>
                     </div>
                   </th>
@@ -66,10 +66,10 @@
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Amount</span>
                       <span v-if="asc && currentSort == 'amount'">
-                        <i class="bi bi-sort-down text-success"></i>
+                        <i class="bi bi-sort-up text-primary"></i>
                       </span>
-                      <span v-else>
-                        <i class="bi bi-sort-up text-success"></i>
+                      <span v-if="!asc && currentSort == 'amount'">
+                        <i class="bi bi-sort-down text-primary"></i>
                       </span>
                     </div>
                   </th>
@@ -81,10 +81,10 @@
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Space</span>
                       <span v-if="asc && currentSort == 'space'">
-                        <i class="bi bi-sort-down text-success"></i>
+                        <i class="bi bi-sort-up text-primary"></i>
                       </span>
-                      <span v-else>
-                        <i class="bi bi-sort-up text-success"></i>
+                      <span v-if="!asc && currentSort == 'space'">
+                        <i class="bi bi-sort-down text-primary"></i>
                       </span>
                     </div>
                   </th>
@@ -96,10 +96,10 @@
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Category</span>
                       <span v-if="asc && currentSort == 'category'">
-                        <i class="bi bi-sort-down text-success"></i>
+                        <i class="bi bi-sort-up text-primary"></i>
                       </span>
-                      <span v-else>
-                        <i class="bi bi-sort-up text-success"></i>
+                      <span v-if="!asc && currentSort == 'category'">
+                        <i class="bi bi-sort-down text-primary"></i>
                       </span>
                     </div>
                   </th>
@@ -111,10 +111,10 @@
                     <div class="d-flex flex-nowrap">
                       <span class="me-2">Date</span>
                       <span v-if="asc && currentSort == 'transactionDate'">
-                        <i class="bi bi-sort-down text-success"></i>
+                        <i class="bi bi-sort-up text-primary"></i>
                       </span>
-                      <span v-else>
-                        <i class="bi bi-sort-up text-success"></i>
+                      <span v-if="!asc && currentSort == 'transactionDate'">
+                        <i class="bi bi-sort-down text-primary"></i>
                       </span>
                     </div>
                   </th>
@@ -150,19 +150,23 @@
                   <td>
                     {{ new Date(t.transactionDate).toLocaleDateString() }}
                   </td>
-                  <td class="d-flex">
-                    <button
-                      class="btn btn-outline-primary me-2"
-                      @click="updateTransaction(t)"
-                    >
-                      <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <button
-                      class="btn btn-outline-danger"
-                      @click="deleteTransaction(t)"
-                    >
-                      <i class="bi bi-trash-fill"></i>
-                    </button>
+                  <td>
+                    <div class="d-flex flex-nowrap">
+                      <button
+                        class="btn btn-outline-primary me-2"
+                        @click="onUpdateTransaction(t)"
+                        data-bs-toggle="modal"
+                        data-bs-target="#updateTransactionModal"
+                      >
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button
+                        class="btn btn-outline-danger"
+                        @click="onDeleteTransaction(t)"
+                      >
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -182,6 +186,7 @@
         </div>
       </div>
     </div>
+    <UpdateTransactionModal ref="updateModal" @tx-updated="onTxUpdated" />
   </div>
 </template>
 
@@ -191,7 +196,6 @@ import {
   getCategories,
   getTransactions,
   deleteTransaction,
-  updateTransaction,
 } from "../api";
 
 import { mapGetters } from "vuex";
@@ -201,7 +205,7 @@ import PaginationButtons from "../components/PaginationButtons";
 import Charts from "../components/charts/Charts";
 import { TYPE } from "vue-toastification";
 import Color from "color";
-//import UpdateTransactionModal from "../components/UpdateTransactionModal";
+import UpdateTransactionModal from "../components/UpdateTransactionModal";
 import { utils, write } from "xlsx";
 
 export default {
@@ -229,7 +233,7 @@ export default {
     TableHeader,
     PaginationButtons,
     Charts,
-    //UpdateTransactionModal
+    UpdateTransactionModal,
   },
   async created() {
     try {
@@ -255,7 +259,12 @@ export default {
   },
   methods: {
     async onNewTx(tx) {
-      this.fetchTransactions(this.selectedPage);
+      this.fetchTransactions(
+        this.selectedPage,
+        this.filters,
+        this.currentSort,
+        this.asc
+      );
       this.$refs.chartsComp.refresh();
 
       const c = this.categories.find(
@@ -271,7 +280,6 @@ export default {
           spaceName: space.name,
         });
       }
-      // fare chiamata get per aggiornare i grafici
     },
     onPageClicked(page) {
       this.selectedPage = page;
@@ -323,7 +331,7 @@ export default {
         this.asc
       );
     },
-    async deleteTransaction(transaction) {
+    async onDeleteTransaction(transaction) {
       try {
         await deleteTransaction(transaction.id);
         this.newToast("Transaction deleted", TYPE.SUCCESS);
@@ -338,20 +346,6 @@ export default {
       } catch (err) {
         this.newToast("Transaction deletion failed", TYPE.ERROR);
       }
-    },
-    async updateTransaction(transaction) {
-      try {
-        await updateTransaction(transaction);
-        this.newToast("Transaction updated", TYPE.SUCCESS);
-
-        this.chartsComp.refresh();
-      } catch (err) {
-        this.newToast("Transaction update failed", TYPE.ERROR);
-      }
-    },
-    async fetchTransaction(transaction) {
-      this.txToUpdate = transaction;
-      console.log("UPDATE", this.txToUpdate);
     },
     isColorLight(color) {
       return Color(color).isLight(color);
@@ -368,7 +362,7 @@ export default {
         obj.amount = t.value;
         obj.category = t.categoryName;
         obj.space = t.spaceName;
-        obj.date = new Date(t.transactionDate).toISOString().split("T")[0];
+        obj.date = new Date(t.transactionDate.split("T")[0]);
 
         data.push(obj);
       });
@@ -399,6 +393,18 @@ export default {
       a.click();
 
       document.body.removeChild(a);
+    },
+    onUpdateTransaction(tx) {
+      this.$refs.updateModal.setTx(tx);
+    },
+    onTxUpdated() {
+      this.fetchTransactions(
+        this.selectedPage,
+        this.filters,
+        this.currentSort,
+        this.asc
+      );
+      this.$refs.chartsComp.refresh();
     },
   },
 };
