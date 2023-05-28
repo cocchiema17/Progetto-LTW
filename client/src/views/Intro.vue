@@ -6,17 +6,23 @@
       <img src="@/assets/finager-titolo.png" id="titolo" />
     </div>
 
-    <p>
-      breve descrizione del servizio che offre l'applicazione web. pi3ehfrp1g
-      ihpigf3h1 npithp girn p 2i4ng pinvòkne vròq ngò2br rnònv ò34 ng5ò4k
-      nefn3jb 54lbgjnrkl5n
+    <p style="color: white">
+      Finager &egrave; un applicazione web che ti permette di gestire e
+      memorizzare le tue finanze attraverso l'inserimento delle tue transazioni
+      e dei fantastici grafici.
+      <br />
+      Fai click su Sign up o su Sign in, in alto a destra, per accedere alla tua
+      area personale.
     </p>
 
     <div id="funzionalita">
       <h2><strong> Funzionalit&agrave; </strong></h2>
       <div>
         <div class="text-image-conteiner">
-          <div class="div-image"></div>
+          <div
+            class="div-image"
+            style="background-image: url('@/assets/tableHeader.png');"
+          ></div>
           <div class="text-element">
             <strong>Funzione 1</strong>
             <br />
@@ -154,7 +160,6 @@ export default {
 
     window.addEventListener("scroll", function () {
       for (let i = 0; i < contents.length; i++) {
-        // console.log(eles[i]);
         const rect = eles[i].getBoundingClientRect();
         const elePosition = rect.top + window.scrollY - window.innerHeight / 2;
 
@@ -198,15 +203,15 @@ a.nav-link {
 }
 
 p {
-  background-color: #198754;
+  background-color: #0d6efd;
   font-size: large;
   padding: 0 10px;
   margin: 0;
-  filter: drop-shadow(0px 4px 10px #198754);
+  filter: drop-shadow(0px 4px 10px #0d6efd);
 }
 
 strong {
-  color: #198754;
+  color: #0d6efd;
 }
 
 #funzionalita {
@@ -225,7 +230,7 @@ h2 {
 }
 
 a {
-  color: #198754;
+  color: #0d6efd;
 }
 
 .fa {
@@ -237,7 +242,7 @@ a {
   text-decoration: none;
   margin: 2px 2px;
   border-radius: 50%;
-  color: #198754;
+  color: #0d6efd;
 }
 
 .fa:hover {
@@ -262,7 +267,7 @@ a {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url("@/assets/logo.png");
+  /* background-image: url("@/assets/logo.png"); */
 }
 
 .text-element {
@@ -277,7 +282,7 @@ a {
 
   .div-image {
     height: 300px;
-    background-image: url("@/assets/logo.png");
+    /* background-image: url("@/assets/logo.png"); */
   }
 
   .text-image-conteiner > div {
