@@ -1,7 +1,7 @@
 <template>
   <nav id="navbar" class="navbar body-tertiary border-bottom">
     <div class="container-fluid">
-      <span class="navbar-brand mb-0 h3"> Finager </span>
+      <span class="navbar-brand mb-0 h3 text-primary"> Finager </span>
       <ul class="nav nav-pills nav-fill align-items-center">
         <li class="nav-item" v-if="!user">
           <router-link to="/login" class="nav-link">Sign in</router-link>

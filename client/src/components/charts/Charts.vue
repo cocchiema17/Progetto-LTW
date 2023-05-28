@@ -105,12 +105,12 @@ export default {
       }
     },
     fromDate(value) {
-      if (this.selectedSpace) {
+      if (this.selectedSpace && value.length == 10) {
         this.loadsCharts(this.selectedSpace, value, this.toDate);
       }
     },
     toDate(value) {
-      if (this.selectedSpace) {
+      if (this.selectedSpace && value.length == 10) {
         this.loadsCharts(this.selectedSpace, this.fromDate, value);
       }
     },

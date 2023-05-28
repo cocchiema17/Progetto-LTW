@@ -10,14 +10,6 @@ create table "user" (
   primary key(id)
 );
 
-create table "passwordReset" (
-  "userId" uuid,
-  "token" varchar(200),
-  "expiresAt" timestamp not null ,
-  "consumed" boolean default false,
-  primary key("userId", "token")
-);
-
 create table "space" (
   "id" bigserial,
   "name" varchar(40) not null,

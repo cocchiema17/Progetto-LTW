@@ -80,14 +80,12 @@ const createTransaction = async (payload) => {
   return data;
 };
 
-const deleteTransaction = async (id) => {
-  await axios.delete(`/api/transactions/${id}`, id);
+const deleteTransaction = (id) => {
+  return axios.delete(`/api/transactions/${id}`, id);
 }
 
-// TO DO
-const updateTransaction = async (payload) => {
-  const { data } = await axios.put(`/api/transactions/${payload.id}`, payload)
-  return data;
+const updateTransaction = (id, payload) => {
+  return axios.patch(`/api/transactions/${id}`, payload)
 }
 
 const createSpace = async (name) => {
