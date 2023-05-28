@@ -16,10 +16,10 @@ module.exports = defineConfig({
   pages: {
     index: {
       entry: "src/main.js",
-      title: "Login App",
+      title: "Finager",
     },
   },
-  // aggiunto per far funzionare Filter.vue component
+  // // aggiunto per far funzionare Filter.vue component
   configureWebpack: {
     experiments: {
       topLevelAwait: true,

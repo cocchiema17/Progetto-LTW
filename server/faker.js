@@ -28,7 +28,7 @@ for (let i = 0; i < 75; i++) {
     y ? "expense" : "revenue",
     y ? parseFloat('-' + n) : parseFloat(n),
     faker.helpers.arrayElement(categories),
-    1,
+    4,
     faker.date.past(9)
   ]);
 }

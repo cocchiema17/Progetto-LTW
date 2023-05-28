@@ -1,16 +1,16 @@
 <template>
   <div class="h-100">
+    <Navbar />
     <router-view></router-view>
-    <Footer v-if="false"/>
   </div>
 </template>
 
 <script>
-import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 
 export default {
   name: "App",
-  components: { Footer },
+  components: { Navbar },
 };
 </script>
 
@@ -49,7 +49,7 @@ body {
 }
 
 main {
-  padding-bottom: 30px;
+  padding-bottom: 180px;
 }
 
 @media screen and (min-width: 600px) {

@@ -1,126 +1,125 @@
 <template>
   <main>
-    <Navbar />
+    <div class="container">
+      <div id="chiSiamo">
+        <img src="@/assets/finager-titolo.png" id="titolo" />
+      </div>
 
-    <div id="chiSiamo" class="bg-success">
-      <img src="@/assets/finager-titolo.png" id="titolo" />
-    </div>
+      <p>
+        Finager &egrave; un applicazione web che ti permette di gestire e
+        memorizzare le tue finanze attraverso l'inserimento delle tue
+        transazioni e dei fantastici grafici.
+        <br />
+        Fai click su Sign up o su Sign in, in alto a destra, per accedere alla
+        tua area personale.
+      </p>
 
-    <p style="color: white">
-      Finager &egrave; un applicazione web che ti permette di gestire e
-      memorizzare le tue finanze attraverso l'inserimento delle tue transazioni
-      e dei fantastici grafici.
-      <br />
-      Fai click su Sign up o su Sign in, in alto a destra, per accedere alla tua
-      area personale.
-    </p>
+      <div id="funzionalita">
+        <h2><strong> Funzionalit&agrave; </strong></h2>
+        <div>
+          <div class="text-image-conteiner">
+            <div
+              class="div-image"
+              :style="{
+                backgroundImage:
+                  'url(' + require('@/assets/space.png') + ')',
+              }"
+            ></div>
 
-    <div id="funzionalita">
-      <h2><strong> Funzionalit&agrave; </strong></h2>
-      <div>
-        <div class="text-image-conteiner">
+            <div class="text-element">
+              <strong>Space</strong>
+              <br />
+              <br />
+              Lo Space &egrave; il conto dove potrai inserire e monitorare le
+              tue transazioni, che siano entrate o uscite.
+              <br />
+              Potrai creare i tuoi personali space per suddividere le
+              transazioni in base alle tue esigenze.
+            </div>
+          </div>
+        </div>
+
+        <element ref="ele-1"></element>
+
+        <div>
           <div
-            class="div-image"
-            style="background-image: url('@/assets/tableHeader.png');"
-          ></div>
-          <div class="text-element">
-            <strong>Funzione 1</strong>
-            <br />
-            <br />
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the
-            printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown
-            printer took a galley of type and scrambled it to make a type
-            specimen book. It has survived not only five centuries, but also the
-            leap into electronic typesetting, remaining essentially unchanged.
-            It was popularised in the 1960s with the release of Letraset sheets
-            containing Lorem Ipsum passages, and more recently with desktop
-            publishing software like Aldus PageMaker including versions of Lorem
-            Ipsum.
+            class="text-image-conteiner content hidden inverted"
+            ref="content-1"
+          >
+            <div class="text-element">
+              <strong>Categorie</strong>
+              <br />
+              <br />
+              Sar&agrave; possibile inserire una categoria alle tue transazioni
+              per poterle raggrupparle in base alle tue esigenze. Ad ogni
+              categoria potrai associare un colore a tuo piacimento.
+            </div>
+            <div
+              class="div-image"
+              :style="{
+                backgroundImage:
+                  'url(' + require('@/assets/category.png') + ')',
+              }"
+            ></div>
           </div>
         </div>
-      </div>
 
-      <element ref="ele-1"></element>
+        <element ref="ele-2"></element>
 
-      <div>
-        <div
-          class="text-image-conteiner content hidden inverted"
-          ref="content-1"
-        >
-          <div class="text-element">
-            <strong>Funzione 2</strong>
-            <br />
-            <br />
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the
-            printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown
-            printer took a galley of type and scrambled it to make a type
-            specimen book. It has survived not only five centuries, but also the
-            leap into electronic typesetting, remaining essentially unchanged.
-            It was popularised in the 1960s with the release of Letraset sheets
-            containing Lorem Ipsum passages, and more recently with desktop
-            publishing software like Aldus PageMaker including versions of Lorem
-            Ipsum. eap into electronic typesetting, remaining essentially
-            unchanged. It was popularised in the 1960s with the release of
-            Letraset sheets containing Lorem Ipsum passages, and more recently
-            with desktop publishing software like Aldus PageMaker including
-            versions of Lorem Ipsum.
-          </div>
-          <div class="div-image"></div>
-        </div>
-      </div>
-
-      <element ref="ele-2"></element>
-
-      <div>
-        <div class="text-image-conteiner content hidden" ref="content-2">
-          <div class="div-image"></div>
-          <div class="text-element">
-            <strong>Funzione 3</strong>
-            <br />
-            <br />
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the
-            printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown
-            printer took a galley of type and scrambled it to make a type
-            specimen book. It has survived not only five centuries, but also the
-            leap into electronic typesetting, remaining essentially unchanged.
-            It was popularised in the 1960s with the release of Letraset sheets
-            containing Lorem Ipsum passages, and more recently with desktop
-            publishing software like Aldus PageMaker including versions of Lorem
-            Ipsum.
+        <div>
+          <div class="text-image-conteiner content hidden" ref="content-2">
+            <div
+              class="div-image"
+              :style="{
+                backgroundImage:
+                  'url(' + require('@/assets/exampleTable.png') + ')',
+              }"
+            ></div>
+            <div class="text-element">
+              <strong>Transazioni</strong>
+              <br />
+              <br />
+              Inserisci le tue transazioni all' interno per poterle memorizzare
+              e visualizzare.
+              <br />
+              Nella tua home avrai accesso alla tabella che contiene tutte le
+              tue transazioni.
+              <br />
+              Potrai gestire le tue transazioni: ordinandole in base ad una
+              delle colonne della tabella, filtrarle in base ai dei criteri,
+              modificarle ed eliminarle.
+              <br />
+              &Egrave; possibile scaricare un file excel con i dati delle tue
+              transazioni.
+            </div>
           </div>
         </div>
-      </div>
 
-      <element ref="ele-3"></element>
+        <element ref="ele-3"></element>
 
-      <div>
-        <div
-          class="text-image-conteiner content hidden inverted"
-          ref="content-3"
-        >
-          <div class="text-element">
-            <strong>Funzione 4</strong>
-            <br />
-            <br />
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the
-            printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown
-            printer took a galley of type and scrambled it to make a type
-            specimen book. It has survived not only five centuries, but also the
-            leap into electronic typesetting, remaining essentially unchanged.
-            It was popularised in the 1960s with the release of Letraset sheets
-            containing Lorem Ipsum passages, and more recently with desktop
-            publishing software like Aldus PageMaker including versions of Lorem
-            Ipsum. eap into electronic typesetting, remaining essentially
-            unchanged. It was popularised in the 1960s with the release of
-            Letraset sheets containing Lorem Ipsum passages, and more recently
-            with desktop publishing software like Aldus PageMaker including
-            versions of Lorem Ipsum.
+        <div>
+          <div
+            class="text-image-conteiner content hidden inverted"
+            ref="content-3"
+          >
+            <div class="text-element">
+              <strong>Grafici</strong>
+              <br />
+              <br />
+              Nella tua home avrai tre tipi di grafici che rappresenteranno le
+              transazioni memorizzate: il primo grafico &egrave; un grafico a
+              colonna che rappresenta le tue entrate ed uscite, il
+              secondo grafico &egrave; un grafico in linea ed infine il terzo
+              grafico &egrave; a torta colorato in base alla categoria delle
+              transazioni.
+            </div>
+            <div
+              class="div-image"
+              :style="{
+                backgroundImage: 'url(' + require('@/assets/grafici.png') + ')',
+              }"
+            ></div>
           </div>
-          <div class="div-image"></div>
         </div>
       </div>
     </div>
@@ -132,11 +131,10 @@
 <script>
 import { mapGetters } from "vuex";
 
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 export default {
   name: "IntroPage",
-  components: { Navbar, Footer },
+  components: { Footer },
   computed: {
     ...mapGetters(["user"]),
   },
@@ -183,7 +181,8 @@ a.nav-link {
 }
 
 #chiSiamo {
-  padding: 0 10px;
+  margin-top: 30px;
+  padding: 20px;
   padding-top: 60px;
   background-image: url("@/assets/sfondo.jpg");
   background-position: center;
@@ -204,18 +203,20 @@ a.nav-link {
 
 p {
   background-color: #0d6efd;
+  color: white;
   font-size: large;
   padding: 0 10px;
-  margin: 0;
-  filter: drop-shadow(0px 4px 10px #0d6efd);
+  margin-top: 30px;
+  margin-bottom: 30px;
+  filter: drop-shadow(0px 4px 3px #0d6efd);
 }
 
 strong {
   color: #0d6efd;
+  font-size: larger;
 }
 
 #funzionalita {
-  background-color: rgb(255, 255, 230);
   padding: 0 10px;
 }
 
@@ -266,8 +267,7 @@ a {
 .div-image {
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
-  /* background-image: url("@/assets/logo.png"); */
+  background-size: contain;
 }
 
 .text-element {
@@ -282,7 +282,6 @@ a {
 
   .div-image {
     height: 300px;
-    /* background-image: url("@/assets/logo.png"); */
   }
 
   .text-image-conteiner > div {

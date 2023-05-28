@@ -1,6 +1,5 @@
 <template>
   <div class="home-container">
-    <Navbar />
 
     <Charts ref="chartsComp" />
 
@@ -151,7 +150,7 @@
                     {{ new Date(t.transactionDate).toLocaleDateString() }}
                   </td>
                   <td>
-                    <div class="d-flex flex-nowrap">
+                    <div class="d-flex flex-nowrap justify-content-center">
                       <button
                         class="btn btn-outline-primary me-2"
                         @click="onUpdateTransaction(t)"
@@ -199,7 +198,6 @@ import {
 } from "../api";
 
 import { mapGetters } from "vuex";
-import Navbar from "../components/Navbar";
 import TableHeader from "../components/TableHeader";
 import PaginationButtons from "../components/PaginationButtons";
 import Charts from "../components/charts/Charts";
@@ -219,7 +217,7 @@ export default {
       totalTransactions: 0,
       selectedPage: 0,
       totalPages: 0,
-      pageSize: 15,
+      pageSize: 10,
       chartSpace: 0,
       currentSort: "transactionDate",
       asc: false,
@@ -229,7 +227,6 @@ export default {
     };
   },
   components: {
-    Navbar,
     TableHeader,
     PaginationButtons,
     Charts,
