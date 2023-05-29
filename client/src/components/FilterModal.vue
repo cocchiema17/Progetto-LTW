@@ -28,7 +28,7 @@
               <select class="form-control" v-model="space" id="space">
                 <option value="" selected>None</option>
                 <option
-                  v-for="space in this.$store.state.spaces"
+                  v-for="space in spaces"
                   :key="space.name"
                   :value="space.name"
                 >
@@ -40,34 +40,21 @@
               <label class="form-check-label" for="category"> Category: </label>
               <select class="form-control" v-model="category" id="category">
                 <option value="">None</option>
-                <option
-                  v-for="category in this.$store.state.categories"
-                  :key="category.name"
-                >
+                <option v-for="category in categories" :key="category.name">
                   {{ category.name }}
                 </option>
               </select>
             </div>
-            <div class="input-group mb-3">
-              <div class="col-6 pe-3 m-0" id="amount-conteiner">
+            <div class="row g-3 mb-3">
+              <div class="col">
                 <label class="form-check-label" for="amount"> Amount: </label>
-                <input
-                  class="form-control"
-                  type="number"
-                  v-model="amount"
-                  id="amount"
-                />
+                <MoneyInput v-model="amount" required />
               </div>
-              <div class="col-6 p-0 m-0" id="operator-conteiner">
+              <div class="col">
                 <label class="form-check-label" for="operator">
                   Operator:
                 </label>
-                <select
-                  class="form-control"
-                  v-model="operator"
-                  id="operator"
-                  @change="onChangeOperator"
-                >
+                <select class="form-control" v-model="operator">
                   <option value="">None</option>
                   <option value="EQ">=</option>
                   <option value="NE">≠</option>
@@ -78,24 +65,17 @@
                   <option value="BT">≥ ≤</option>
                 </select>
               </div>
-              <div class="col-4 ps-3 m-0 d-none" id="amount2-conteiner">
+              <div class="col" v-if="operator == 'BT'">
                 <label class="form-check-label" for="amount2"> Amount: </label>
-                <input
-                  class="form-control"
-                  type="number"
-                  v-model="amount2"
-                  id="amount2"
-                />
+                <MoneyInput v-model="amount2" required />
               </div>
             </div>
-            <p class="text-danger mt-1">
-              <span v-if="isError"> Error on Amount or Operator </span>
-            </p>
-            <p class="text-danger mt-1">
-              <span v-if="isErrorBT">
-                The first value must be less than the second
-              </span>
-            </p>
+            <Alert
+              class="mb-0"
+              :msg="errMessage"
+              :type="'danger'"
+              v-if="errMessage"
+            />
           </form>
         </div>
         <div class="modal-footer" style="justify-content: space-between">
@@ -131,39 +111,40 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import { TYPE } from "vue-toastification";
+import MoneyInput from "./MoneyInput";
+import Alert from "./Alert";
 
-export default (await import("vue")).defineComponent({
+export default {
   name: "FilterModalComp",
+  components: { MoneyInput, Alert },
+  computed: {
+    ...mapGetters(["spaces", "categories"]),
+  },
   data() {
     return {
       search: "",
       category: "",
       space: "",
       operator: "",
-      amount: "",
-      amount2: "",
-      isError: false,
-      isErrorBT: false,
+      amount: null,
+      amount2: null,
+      errMessage: null,
     };
   },
   methods: {
     async onFilter() {
-      const form = this.$refs.filForm;
       const closeBtn = this.$refs.closeBtn;
-      if (
-        (form.amount.value && !form.operator.value) ||
-        (!form.amount.value && form.operator.value)
-      ) {
-        this.isError = true;
+      if ((this.amount && !this.operator) || (!this.amount && this.operator)) {
+        this.errMessage = "You must enter both amount and the operator";
       } else if (
-        parseInt(form.amount.value) >= parseInt(form.amount2.value) &&
-        form.operator.value === "BT"
+        parseInt(this.amount) >= parseInt(this.amount2) &&
+        this.operator === "BT"
       ) {
-        this.isErrorBT = true;
+        this.errMessage = "The first value must be less than the second";
       } else {
-        this.isError = false;
-        this.isErrorBT = false;
+        this.errMessage = null;
         this.$emit("new-filters", {
           search: this.search || null,
           space: this.space || null,
@@ -176,36 +157,14 @@ export default (await import("vue")).defineComponent({
         this.newToast("Filters added", TYPE.SUCCESS);
       }
     },
-    onChangeOperator(isDefault = true) {
-      const op = this.$refs.filForm.operator.value;
-      const amount = document.getElementById("amount-conteiner");
-      const operator = document.getElementById("operator-conteiner");
-      const amount2 = document.getElementById("amount2-conteiner");
-      if (op == "BT" && isDefault) {
-        amount.classList.remove("col-6");
-        amount.classList.add("col-4");
-        operator.classList.remove("col-6");
-        operator.classList.add("col-4");
-        amount2.classList.remove("d-none");
-      } else {
-        amount.classList.add("col-6");
-        amount.classList.remove("col-4");
-        operator.classList.add("col-6");
-        operator.classList.remove("col-4");
-        amount2.classList.add("d-none");
-        this.amount2 = "";
-      }
-    },
     async resetData() {
       this.search = "";
       this.category = "";
       this.space = "";
       this.operator = "";
-      this.amount = "";
-      this.amount2 = "";
-      this.isError = false;
-      this.isErrorBT = false;
-      this.onChangeOperator(false);
+      this.amount = null;
+      this.amount2 = null;
+      this.errMessage = null;
     },
     async resetFilters() {
       this.resetData();
@@ -215,8 +174,7 @@ export default (await import("vue")).defineComponent({
       this.newToast("Filters reset", TYPE.SUCCESS);
     },
   },
-});
+};
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

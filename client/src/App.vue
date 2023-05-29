@@ -49,7 +49,7 @@ body {
 }
 
 main {
-  padding-bottom: 180px;
+  padding-bottom: 80px;
 }
 
 @media screen and (min-width: 600px) {

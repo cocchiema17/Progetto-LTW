@@ -6,12 +6,11 @@
       </div>
 
       <p>
-        Finager &egrave; un applicazione web che ti permette di gestire e
-        memorizzare le tue finanze attraverso l'inserimento delle tue
-        transazioni e dei fantastici grafici.
+        Finager &egrave; una applicazione che ti permette di gestire e visualizzare le
+        tue finanze.
         <br />
-        Fai click su Sign up o su Sign in, in alto a destra, per accedere alla
-        tua area personale.
+        Fai click su Sign in o Sign up in alto a destra per accedere alla tua
+        area personale!
       </p>
 
       <div id="funzionalita">
@@ -21,8 +20,7 @@
             <div
               class="div-image"
               :style="{
-                backgroundImage:
-                  'url(' + require('@/assets/space.png') + ')',
+                backgroundImage: 'url(' + require('@/assets/space.png') + ')',
               }"
             ></div>
 
@@ -30,14 +28,14 @@
               <strong>Space</strong>
               <br />
               <br />
-              Lo Space &egrave; il conto dove potrai inserire e monitorare le
-              tue transazioni, che siano entrate o uscite.
-              <br />
-              Potrai creare i tuoi personali space per suddividere le
-              transazioni in base alle tue esigenze.
+              Lo Space &egrave; il conto dove inserire le tue transazioni. Crea i tuoi
+              personali Space per suddividere entrate e uscite in base alle tue
+              esigenze!
             </div>
           </div>
         </div>
+
+        <hr />
 
         <element ref="ele-1"></element>
 
@@ -50,9 +48,8 @@
               <strong>Categorie</strong>
               <br />
               <br />
-              Sar&agrave; possibile inserire una categoria alle tue transazioni
-              per poterle raggrupparle in base alle tue esigenze. Ad ogni
-              categoria potrai associare un colore a tuo piacimento.
+              Assegna delle etichette a ciascuna transazione in modo da poterle
+              raggruppare ed identificare rapidamente!
             </div>
             <div
               class="div-image"
@@ -63,6 +60,8 @@
             ></div>
           </div>
         </div>
+
+        <hr />
 
         <element ref="ele-2"></element>
 
@@ -79,21 +78,15 @@
               <strong>Transazioni</strong>
               <br />
               <br />
-              Inserisci le tue transazioni all' interno per poterle memorizzare
-              e visualizzare.
-              <br />
-              Nella tua home avrai accesso alla tabella che contiene tutte le
-              tue transazioni.
-              <br />
-              Potrai gestire le tue transazioni: ordinandole in base ad una
-              delle colonne della tabella, filtrarle in base ai dei criteri,
-              modificarle ed eliminarle.
-              <br />
-              &Egrave; possibile scaricare un file excel con i dati delle tue
-              transazioni.
+              Una transazioni rappresenta una entrata o un uscita all’interno di
+              uno Space. Nella tua home avrai accesso ad una tabella dove
+              poterle visualizzare, ordinare, filtrare, modificare, cancellare
+              ed esportare in formato excel!
             </div>
           </div>
         </div>
+
+        <hr />
 
         <element ref="ele-3"></element>
 
@@ -106,12 +99,10 @@
               <strong>Grafici</strong>
               <br />
               <br />
-              Nella tua home avrai tre tipi di grafici che rappresenteranno le
-              transazioni memorizzate: il primo grafico &egrave; un grafico a
-              colonna che rappresenta le tue entrate ed uscite, il
-              secondo grafico &egrave; un grafico in linea ed infine il terzo
-              grafico &egrave; a torta colorato in base alla categoria delle
-              transazioni.
+              Ottieni una maggiore consapevolezza del tuo Space attraverso tre
+              splenditi grafici: renditi conto di quanto ammontano le tue
+              entrate e spese mensili, del valore del tuo conto e della
+              suddivisione per categorie!
             </div>
             <div
               class="div-image"
@@ -151,15 +142,11 @@ export default {
       this.$refs["ele-3"],
     ];
 
-    console.log(this.$refs);
-
-    console.log(contents);
-    console.log(eles);
-
     window.addEventListener("scroll", function () {
       for (let i = 0; i < contents.length; i++) {
         const rect = eles[i].getBoundingClientRect();
-        const elePosition = rect.top + window.scrollY - window.innerHeight / 2;
+        const elePosition =
+          rect.top + window.scrollY - window.innerHeight / 1.5;
 
         if (window.pageYOffset > elePosition) {
           contents[i].classList.add("visible");
@@ -222,6 +209,11 @@ strong {
 
 h2 {
   padding: 10px;
+}
+
+hr {
+  color: #0d6efd;
+  visibility: hidden;
 }
 
 #logo {
@@ -301,6 +293,10 @@ a {
 
   .text-image-conteiner.inverted {
     flex-direction: column-reverse;
+  }
+
+  hr {
+    visibility: visible;
   }
 }
 

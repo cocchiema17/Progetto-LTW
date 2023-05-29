@@ -20,9 +20,9 @@ module.exports = defineConfig({
     },
   },
   // // aggiunto per far funzionare Filter.vue component
-  configureWebpack: {
-    experiments: {
-      topLevelAwait: true,
-    },
-  },
+  // configureWebpack: {
+  //   experiments: {
+  //     topLevelAwait: true,
+  //   },
+  // },
 });

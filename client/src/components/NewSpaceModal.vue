@@ -1,5 +1,12 @@
 <template>
-  <div class="modal fade" id="newSpaceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" >
+  <div
+    class="modal fade"
+    id="newSpaceModal"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -48,7 +55,7 @@ import { createSpace } from "../api";
 import { TYPE } from "vue-toastification";
 import Alert from "./Alert.vue";
 
-export default (await import("vue")).defineComponent({
+export default {
   name: "NewSpaceModalComp",
   components: { Alert },
   computed: {
@@ -87,5 +94,5 @@ export default (await import("vue")).defineComponent({
       this.errMessage = "";
     },
   },
-});
+};
 </script>
