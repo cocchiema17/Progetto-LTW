@@ -105,13 +105,13 @@ export default {
       }
     },
     fromDate(value) {
-      if (this.selectedSpace && value.length == 10) {
-        this.loadsCharts(this.selectedSpace, value, this.toDate);
+      if (this.selectedSpace && (!value || value.length == 10)) {
+        this.loadsCharts(this.selectedSpace, value || null, this.toDate);
       }
     },
     toDate(value) {
-      if (this.selectedSpace && value.length == 10) {
-        this.loadsCharts(this.selectedSpace, this.fromDate, value);
+      if (this.selectedSpace && (!value || value.length == 10)) {
+        this.loadsCharts(this.selectedSpace, this.fromDate, value || null);
       }
     },
   },
