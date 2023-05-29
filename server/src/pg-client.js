@@ -316,6 +316,15 @@ class PgClient {
 
     return rowCount;
   }
+
+  async getReportData(userId) {
+    const { rows } = await pool.query(
+      `SELECT title as "Title", description as "Description", value as "Amount", "categoryName" as "Category", "transactionDate" as "Date"
+      FROM transaction t JOIN space s ON t."spaceId" = s.id
+      WHERE "userId" = $1`, [userId]
+    );
+    return rows;
+  }
 }
 
 module.exports = new PgClient();

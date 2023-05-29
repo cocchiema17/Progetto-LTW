@@ -1,6 +1,5 @@
 <template>
   <div class="home-container">
-
     <Charts ref="chartsComp" />
 
     <div class="container-fluid">
@@ -195,6 +194,7 @@ import {
   getCategories,
   getTransactions,
   deleteTransaction,
+  getExcelReport,
 } from "../api";
 
 import { mapGetters } from "vuex";
@@ -204,7 +204,6 @@ import Charts from "../components/charts/Charts";
 import { TYPE } from "vue-toastification";
 import Color from "color";
 import UpdateTransactionModal from "../components/UpdateTransactionModal";
-import { utils, write } from "xlsx";
 
 export default {
   name: "HomePage",
@@ -347,49 +346,24 @@ export default {
     isColorLight(color) {
       return Color(color).isLight(color);
     },
-    onDownloadReport() {
-      const workbook = utils.book_new();
+    async onDownloadReport() {
+      try {
+        const response = await getExcelReport();
 
-      const data = [];
+        const fileData = new Blob([response], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
 
-      this.transactions.forEach((t) => {
-        const obj = {};
-        obj.title = t.title;
-        obj.description = t.description;
-        obj.amount = t.value;
-        obj.category = t.categoryName;
-        obj.space = t.spaceName;
-        obj.date = new Date(t.transactionDate.split("T")[0]);
+        const downloadLink = document.createElement("a");
 
-        data.push(obj);
-      });
+        downloadLink.href = window.URL.createObjectURL(fileData);
+        downloadLink.setAttribute("download", "Report.xlsx");
 
-      const worksheet = utils.json_to_sheet(data);
-
-      utils.book_append_sheet(workbook, worksheet, "Report");
-
-      const excelBuffer = write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-
-      const blob = new Blob([excelBuffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `report_${this.pageSize * this.selectedPage}-${
-        this.pageSize * this.selectedPage + this.pageSize
-      }.xlsx`;
-
-      document.body.appendChild(a);
-
-      a.click();
-
-      document.body.removeChild(a);
+        downloadLink.click();
+      } catch (err) {
+        console.error(err);
+        this.newToast("Report download failed", TYPE.ERROR);
+      }
     },
     onUpdateTransaction(tx) {
       this.$refs.updateModal.setTx(tx);

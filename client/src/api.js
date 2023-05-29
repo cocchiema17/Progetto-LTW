@@ -13,7 +13,6 @@ axios.interceptors.request.use(
   }
 );
 
-
 const getChartsData = (spaceId, fromDate, toDate) => {
   const params = { spaceId };
 
@@ -93,6 +92,11 @@ const createSpace = async (name) => {
   return data;
 };
 
+const getExcelReport = async () => {
+  const { data } = await axios.get('/api/report', { responseType: 'arraybuffer' });
+  return data;
+}
+
 export {
   getCurrentUser,
   getSpaces,
@@ -104,5 +108,6 @@ export {
   deleteTransaction,
   updateTransaction,
   createSpace,
-  getChartsData
+  getChartsData,
+  getExcelReport
 };

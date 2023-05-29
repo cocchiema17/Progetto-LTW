@@ -11,6 +11,7 @@ const category = require("./routes/category-router");
 const space = require("./routes/space-router");
 const transaction = require("./routes/transaction-router");
 const chart = require("./routes/chart-router");
+const report = require("./routes/report-router");
 
 const errorHandler = require("./middlewares/error-handler");
 const NotFoundError = require("./errors/not-found-error");
@@ -34,6 +35,7 @@ app.use("/api", category);
 app.use("/api", space);
 app.use("/api", transaction);
 app.use("/api", chart);
+app.use("/api", report);
 
 app.all("*", (req, res) => {
   throw new NotFoundError();
