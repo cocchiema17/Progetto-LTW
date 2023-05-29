@@ -5,8 +5,6 @@ create table "user" (
   "email" varchar(60) not null unique,
   "password" varchar(200) not null,
   "createdAt" timestamp default CURRENT_TIMESTAMP check ("createdAt" <= CURRENT_TIMESTAMP),
-  "emailActivated" boolean default false,
-  "emailActivatedAt" timestamp check ("emailActivatedAt" <= CURRENT_TIMESTAMP),
   primary key(id)
 );
 
@@ -40,7 +38,6 @@ create table "transaction" (
   primary key ("id")
 );
 
-alter table "passwordReset" add foreign key ("userId") REFERENCES "user" ("id");
 alter table "space" add foreign key ("userId") REFERENCES "user" ("id");
 alter table "category" add foreign key ("spaceId") REFERENCES "space" ("id");
 alter table "transaction" add foreign key ("categoryName", "spaceId") REFERENCES "category" ("name", "spaceId");
