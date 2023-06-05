@@ -66,7 +66,6 @@ import NewSpaceModal from "./NewSpaceModal";
 
 export default {
   name: "TableHeaderComp",
-  // props: ["totalTransactions", "pageSize"],
   props: {
     totalTransactions: {
       type: Number,

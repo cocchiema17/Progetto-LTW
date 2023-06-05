@@ -46,7 +46,6 @@ const getCategories = async () => {
   return data.value;
 };
 
-// non prende 0 come valore di amount e amount2
 const getTransactions = async (page = 0, pageSize = 10, filters = {}, sortColumn, asc) => {
   const query = {
     page,

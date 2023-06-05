@@ -19,10 +19,4 @@ module.exports = defineConfig({
       title: "Finager",
     },
   },
-  // // aggiunto per far funzionare Filter.vue component
-  // configureWebpack: {
-  //   experiments: {
-  //     topLevelAwait: true,
-  //   },
-  // },
 });
